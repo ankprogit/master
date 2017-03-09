@@ -1,0 +1,4 @@
+
+$last_name="Hgfgfg JJJJJJJ";
+$last_name=str_replace('\' ', '\'', ucwords(str_replace('\'', '\' ', strtolower($last_name))));
+echo $last_name;
