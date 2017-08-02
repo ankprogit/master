@@ -346,11 +346,13 @@ function creating_products($url,$request)
 $product_public=array();
 		foreach ( $items as $item ) {
 			
-			//print_r($item);
  $product_name = $item['name'];
     $product_id = $item['product_id'];
     $product_quantity = $item['quantity'];
  $product_total = $item['total'];
+ $product_subtotal_tax = $item['subtotal_tax'];
+
+ 
 	 
   $product_variation_id = $item['variation_id'];
 
@@ -361,7 +363,7 @@ $product_public=array();
   "Units"=>  "items",
   "IsActive"=>  true,
   "UnitPrice"=>  $product_total,
-  "VAT"=>  0, 
+  "VAT"=>   25, 
   "ProductType"=>  "Service",
     "BookKeepingAccount"=> 3000,
   "BookKeepingSalesEUAccount"=> 3510,
@@ -392,28 +394,63 @@ $jsonData_product = json_encode($product_request);
   
 $output1=creating_products($product_url,$jsonData_product);
  
-$obj=json_encode($output1);
-$obj=json_decode($obj,true);
 
+$obj=json_decode($output1,true);
+print_r($obj);
 $product_public[]=$output1;	
 	//$product_public[]=$Outcome;
 	}else{
-echo "already there ".$product_id;	
 	$product_public[]=$prod->ProductPublicId;
+	$pro_descr=$prod->Description;
 		
 	}
 	
 
  
 }
-print_r($product_public);
-
+print_r($product_public['0']);
+ 
 		$order1 = wc_get_order( $order_id );
 		$order_data = $order1->get_data();
 		//echo $order_data['currency'];
 		//print_r($order_data);
-		exit;
+	
 		 function CurlSendPostRequest($url,$request)
+    {
+       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+	   $ch = curl_init($url);
+        $options = array(
+                CURLOPT_RETURNTRANSFER => false,         // return web page
+                CURLOPT_HEADER         => false,        // don't return headers
+                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
+               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
+			   
+                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
+                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
+                CURLOPT_TIMEOUT        => 20,          // timeout on response
+                CURLOPT_POST            => 1,            // i am sending post data
+                CURLOPT_POSTFIELDS     => $request,    // this are my post vars
+                CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
+                CURLOPT_SSL_VERIFYPEER => false,        //
+                CURLOPT_VERBOSE        => 1,
+                CURLOPT_HTTPHEADER     => array(
+				"Authorization: Basic $authentication",
+                    "Content-Type: application/json",
+					"Content-Length:". strlen($request))    
+        );
+		//print_r($options);
+        curl_setopt_array($ch,$options);
+        $data = curl_exec($ch);
+	
+        $curl_errno = curl_errno($ch);
+        $curl_error = curl_error($ch);
+        //echo $curl_errno;
+        //echo $curl_error;
+        curl_close($ch);
+        return $data;
+    }
+	
+	 function Creating_invoice($url,$request)
     {
        $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
 	   $ch = curl_init($url);
@@ -464,7 +501,31 @@ $request=array(
   
 $output=CurlSendPostRequest($url,$jsonDataEncoded);
 $Outcome=json_decode($output);
-$publicId=$Outcome['PublicId'];
+echo $publicIdcustomer=$Outcome['PublicId'];
+
+
+
+//Creating the first invoice
+$current_date=date("Y-m-d h:i:s");
+$NewDate=date('Y-m-d h:i:s', strtotime("+3 days"));
+	$url="https://apitest.billecta.com/v1/invoice/action";
+$request=array( 
+  "CreditorPublicId"=> $CreditorPublicId,
+  "DebtorPublicId"=> $publicIdcustomer,
+  "InvoiceDate"=>$current_date,
+  "DueDate"=> $NewDate,
+  "DeliveryDate" =>null,
+  "Records"=>array("ProductPublicId"=>$product_public['0'],"ArticleDescription"=>$pro_descr,""),
+  
+);
+  $jsonDataEncoded = json_encode($request);
+ 
+  
+$output=CurlSendPostRequest($url,$jsonDataEncoded);
+$Outcome=json_decode($output);
+echo $publicIdcustomer=$Outcome['PublicId'];
+
+//end invoice
 	exit;
 		// Mark as on-hold (we're awaiting the cheque)
 		$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
