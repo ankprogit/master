@@ -1,7 +1,5 @@
 <?php 
-
 class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
-
 	public function __construct(){
 		$this->id = 'billecta_payment';
 		$this->method_title = __('Billecta Payment','woocommerce-billecta-payment-gateway');
@@ -44,35 +42,21 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					),'inoice_fee' =>
   array(
   'title' 		=> __( 'invoice_fee', 'woocommerce-billecta-payment-gateway' ),
-
-
     'desc'    => __( 'This controls the position of the currency symbol.', 'woocommerce-billecta-payment-gateway' ),
-
     'id'      => 'woocommerce_currency_pos',
-
     'css'     => 'min-width:150px;',
-
     'std'     => 'No Fee', // WooCommerce < 2.0
-
     'default' => 'no', // WooCommerce >= 2.0
-
     'type'    => 'select',
 	'label' 		=> __( 'Invoice fee', 'woocommerce-billecta-payment-gateway' ),
-
     'options' => array(
  '0'        => __( 'no fee', 'woocommerce-billecta-payment-gateway' ),
       '5'        => __( '5', 'woocommerce-billecta-payment-gateway' ),
-
       '10'       => __( '10', 'woocommerce-billecta-payment-gateway' ),
-
       '15'  => __( '15', 'woocommerce-billecta-payment-gateway' ),
-
       '20' => __( '20', 'woocommerce-billecta-payment-gateway' )
-
     ),
-
     'desc_tip' =>  true,
-
   ),'partial_payment' => array(
 					'title' 		=> __( 'Partial Payment', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
@@ -86,11 +70,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					 'options' => array(
  '2'        => __( '2', 'woocommerce-billecta-payment-gateway' ),
       '3'        => __( '3', 'woocommerce-billecta-payment-gateway' ),
-
       '4'       => __( '4', 'woocommerce-billecta-payment-gateway' ),
-
       '5'  => __( '5', 'woocommerce-billecta-payment-gateway' ),
-
       '6' => __( '6', 'woocommerce-billecta-payment-gateway' ),
 	  '7'  => __( '7', 'woocommerce-billecta-payment-gateway' ),
 	  '8'  => __( '8', 'woocommerce-billecta-payment-gateway' ),
@@ -106,7 +87,6 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	  '18'  => __( '18', 'woocommerce-billecta-payment-gateway' ),
 	    '19'  => __( '19', 'woocommerce-billecta-payment-gateway' ),
 		  '20'  => __( '20', 'woocommerce-billecta-payment-gateway' ),
-
     ),
 					'label' 		=> __( 'Partial payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
@@ -123,11 +103,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					 'options' => array(
  '2'        => __( '2', 'woocommerce-billecta-payment-gateway' ),
       '3'        => __( '3', 'woocommerce-billecta-payment-gateway' ),
-
       '4'       => __( '4', 'woocommerce-billecta-payment-gateway' ),
-
       '5'  => __( '5', 'woocommerce-billecta-payment-gateway' ),
-
       '6' => __( '6', 'woocommerce-billecta-payment-gateway' ),
 	  '7'  => __( '7', 'woocommerce-billecta-payment-gateway' ),
 	  '8'  => __( '8', 'woocommerce-billecta-payment-gateway' ),
@@ -135,42 +112,27 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	  '10'  => __( '10', 'woocommerce-billecta-payment-gateway' ),
 	  '11'  => __( '11', 'woocommerce-billecta-payment-gateway' ),
 	  '12'  => __( '12', 'woocommerce-billecta-payment-gateway' ),
-
     ),
 					'label' 		=> __( 'Number of invoices option 1 Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),'inoice_fee_partial_option1' =>
   array(
   'title' 		=> __( 'invoice_fee_option', 'woocommerce-billecta-payment-gateway' ),
-
-
     'desc'    => __( 'This controls the position of the currency symbol.', 'woocommerce-billecta-payment-gateway' ),
-
     'id'      => 'woocommerce_currency_pos',
-
     'css'     => 'min-width:150px;',
-
     'std'     => 'No Fee', // WooCommerce < 2.0
-
     'default' => 'no', // WooCommerce >= 2.0
-
     'type'    => 'select',
 	'label' 		=> __( 'Invoice fee Option 1', 'woocommerce-billecta-payment-gateway' ),
-
     'options' => array(
  '0'        => __( 'no fee', 'woocommerce-billecta-payment-gateway' ),
       '5'        => __( '5', 'woocommerce-billecta-payment-gateway' ),
-
       '10'       => __( '10', 'woocommerce-billecta-payment-gateway' ),
-
       '15'  => __( '15', 'woocommerce-billecta-payment-gateway' ),
-
       '20' => __( '20', 'woocommerce-billecta-payment-gateway' )
-
     ),
-
     'desc_tip' =>  true,
-
   ),
 					'registration_fee_option1' => array(
 					'title' 		=> __( 'Registration fee:', 'woocommerce-billecta-payment-gateway' ),
@@ -178,11 +140,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					 'options' => array(
  '2'        => __( '2', 'woocommerce-billecta-payment-gateway' ),
       '3'        => __( '3', 'woocommerce-billecta-payment-gateway' ),
-
       '4'       => __( '4', 'woocommerce-billecta-payment-gateway' ),
-
       '5'  => __( '5', 'woocommerce-billecta-payment-gateway' ),
-
       '6' => __( '6', 'woocommerce-billecta-payment-gateway' ),
 	  '7'  => __( '7', 'woocommerce-billecta-payment-gateway' ),
 	  '8'  => __( '8', 'woocommerce-billecta-payment-gateway' ),
@@ -190,7 +149,6 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	  '10'  => __( '10', 'woocommerce-billecta-payment-gateway' ),
 	  '11'  => __( '11', 'woocommerce-billecta-payment-gateway' ),
 	  '12'  => __( '12', 'woocommerce-billecta-payment-gateway' ),
-
     ),
 					'label' 		=> __( 'Registration option 1 Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
@@ -309,16 +267,49 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 		global $woocommerce;
 		//print_r($_POST);
 		$CreditorPublicId=$_POST['billecta_payment-CreditorPublicId'];
-		//exit;
+		
 		$order = new WC_Order( $order_id );
-		$order1 = wc_get_order( $order_id );
-		$order_data = $order1->get_data();
-		//echo $order_data['currency'];
-		print_r($order_data);
-		exit;
-		 function CurlSendPostRequest($url,$request)
-    {
+$items = $order->get_items();
 
+function getall_products($url,$request)
+    {
+       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+	   $ch = curl_init($url);
+        $options = array(
+                CURLOPT_RETURNTRANSFER => true,         // return web page
+                CURLOPT_HEADER         => false,        // don't return headers
+                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
+               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
+			   
+                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
+                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
+                CURLOPT_TIMEOUT        => 20,          // timeout on response
+                CURLOPT_POST            => 0,    // this are my post vars
+                CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
+                CURLOPT_SSL_VERIFYPEER => false,        //
+                CURLOPT_VERBOSE        => 1,
+                CURLOPT_HTTPHEADER     => array(
+				"Authorization: Basic $authentication",
+                    "Content-Type: application/json")    
+        );
+		//print_r($options);
+        curl_setopt_array($ch,$options);
+        $data = curl_exec($ch);
+	
+        $curl_errno = curl_errno($ch);
+        $curl_error = curl_error($ch);
+        //echo $curl_errno;
+        //echo $curl_error;
+        curl_close($ch);
+        return $data;
+    }
+	
+	
+	
+//Creating the product in the billecta
+
+function creating_products($url,$request)
+    {
        $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
 	   $ch = curl_init($url);
         $options = array(
@@ -341,7 +332,111 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					"Content-Length:". strlen($request))    
         );
 		//print_r($options);
+        curl_setopt_array($ch,$options);
+        $data = curl_exec($ch);
+	
+        $curl_errno = curl_errno($ch);
+        $curl_error = curl_error($ch);
+        //echo $curl_errno;
+        //echo $curl_error;
+        curl_close($ch);
+        return $data;
+    }
+	$product_url="https://apitest.billecta.com/v1/products/products";
+$product_public=array();
+		foreach ( $items as $item ) {
+			
+			//print_r($item);
+ $product_name = $item['name'];
+    $product_id = $item['product_id'];
+    $product_quantity = $item['quantity'];
+ $product_total = $item['total'];
+	 
+  $product_variation_id = $item['variation_id'];
 
+	$product_request=array("CreditorPublicId"=>$CreditorPublicId,
+	"ArticleNumber"=> $product_id,
+  "ProductExternalId"=> $product_id,
+  "Description"=> $product_name,
+  "Units"=>  "items",
+  "IsActive"=>  true,
+  "UnitPrice"=>  $product_total,
+  "VAT"=>  0, 
+  "ProductType"=>  "Service",
+    "BookKeepingAccount"=> 3000,
+  "BookKeepingSalesEUAccount"=> 3510,
+  "BookKeepingSalesEUVATAccount"=> 3006,
+  "BookKeepingSalesNonEUAccount"=> 3108,
+  "BookKeepingPurchaseAccount"=> 4000
+  );
+ $get_allproduct="https://apitest.billecta.com/v1/products/products/$CreditorPublicId/?externalid=$product_id";
+ $jsonData_allproduct=array();
+ $jsonData_allproduct=json_encode($jsonData_allproduct);
+$all_pro=getall_products($get_allproduct,$jsonData_allproduct);
+
+$all_products=json_decode($all_pro);
+//print_r($all_products);
+$pro_me=array();
+foreach($all_products as $prod)
+	{
+$pro_me[]=$prod->ProductExternalId;
+	}
+
+
+if(!in_array($product_id,$pro_me))
+	{
+	
+	
+$jsonData_product = json_encode($product_request);
+ 
+  
+$output1=creating_products($product_url,$jsonData_product);
+ 
+$obj=json_encode($output1);
+$obj=json_decode($obj,true);
+
+$product_public[]=$output1;	
+	//$product_public[]=$Outcome;
+	}else{
+echo "already there ".$product_id;	
+	$product_public[]=$prod->ProductPublicId;
+		
+	}
+	
+
+ 
+}
+print_r($product_public);
+
+		$order1 = wc_get_order( $order_id );
+		$order_data = $order1->get_data();
+		//echo $order_data['currency'];
+		//print_r($order_data);
+		exit;
+		 function CurlSendPostRequest($url,$request)
+    {
+       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+	   $ch = curl_init($url);
+        $options = array(
+                CURLOPT_RETURNTRANSFER => false,         // return web page
+                CURLOPT_HEADER         => false,        // don't return headers
+                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
+               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
+			   
+                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
+                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
+                CURLOPT_TIMEOUT        => 20,          // timeout on response
+                CURLOPT_POST            => 1,            // i am sending post data
+                CURLOPT_POSTFIELDS     => $request,    // this are my post vars
+                CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
+                CURLOPT_SSL_VERIFYPEER => false,        //
+                CURLOPT_VERBOSE        => 1,
+                CURLOPT_HTTPHEADER     => array(
+				"Authorization: Basic $authentication",
+                    "Content-Type: application/json",
+					"Content-Length:". strlen($request))    
+        );
+		//print_r($options);
         curl_setopt_array($ch,$options);
         $data = curl_exec($ch);
 	
@@ -368,7 +463,6 @@ $request=array(
  
   
 $output=CurlSendPostRequest($url,$jsonDataEncoded);
-
 $Outcome=json_decode($output);
 $publicId=$Outcome['PublicId'];
 	exit;
@@ -387,8 +481,6 @@ $publicId=$Outcome['PublicId'];
 			'redirect' => $this->get_return_url( $order )
 		);	
 	}
-
-
 	public function payment_fields(){
 		?>
        
