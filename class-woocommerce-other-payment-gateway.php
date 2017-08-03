@@ -375,27 +375,28 @@ $product_public=array();
  $jsonData_allproduct=json_encode($jsonData_allproduct);
 $all_pro=getall_products($get_allproduct,$jsonData_allproduct);
 $all_products=json_decode($all_pro);
-
 // Get all the customer
  $get_allcustomer="https://apitest.billecta.com/v1/debtors/debtors/$CreditorPublicId";
  $jsonData_allcustomer=array();
  $jsonData_allcustomer=json_encode($jsonData_allcustomer);
 $all_cust=getall_products($get_allcustomer,$jsonData_allcustomer);
 $all_custmer=json_decode($all_cust);
-print_r($all_custmer);
+//print_r($all_custmer);
 $cust_me=array();
 $cust_email=$order_data['billing']['email'];
-foreach($all_custmer as $cust)
-	{
-$cust_me[]=$cust->Email;
-
-	}
+$creat_cutom=0;
 	foreach($all_custmer as $cust)
 	{
-	if(!in_array($cust_email,$cust_me))
+	if($cust->Email==$cust_email)
 	{
+	$creat_cutom=1;
 	
-$url="https://apitest.billecta.com/v1/debtors/debtor";
+	$cut_public=$cust->DebtorPublicId;
+
+	}
+	}
+	if($creat_cutom==0)
+	{$url="https://apitest.billecta.com/v1/debtors/debtor";
 $request=array( 
   "CreditorPublicId"=> $CreditorPublicId,
   "Name"=> $order_data['billing']['first_name'].' '.$order_data['billing']['last_name'],
@@ -411,16 +412,10 @@ $request=array(
   
 $output=CurlSendPostRequest($url,$jsonDataEncoded);
 $Outcome=json_decode($output);
-echo $publicIdcustomer=$Outcome['PublicId'];
-
-
+$cut_public=$Outcome['PublicId'];
 	//$product_public[]=$Outcome;
-	}else{
-	$product_public[]=$prod->DebtorPublicId;
-	$pro_descr=$prod->Description;
 		
-	}
-	}
+		}
 	
 	// eND OF THE CUSTOMER CHECKING
 exit;
