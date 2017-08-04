@@ -267,7 +267,7 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 		global $woocommerce;
 		//print_r($_POST);
 		$CreditorPublicId=$_POST['billecta_payment-CreditorPublicId'];
-		
+		$apiurl=$_POST['billecta_payment-payment_mode'];
 		$order = new WC_Order( $order_id );
 $items = $order->get_items();
 	$order1 = wc_get_order( $order_id );
@@ -343,8 +343,57 @@ function creating_products($url,$request)
         curl_close($ch);
         return $data;
     }
-	$product_url="https://apitest.billecta.com/v1/products/products";
+	$product_url=$apiurl."/v1/products/products";
 $product_public=array();
+
+// Get all the customer
+ $get_allcustomer=$apiurl."/v1/debtors/debtors/$CreditorPublicId";
+ $jsonData_allcustomer=array();
+ $jsonData_allcustomer=json_encode($jsonData_allcustomer);
+$all_cust=getall_products($get_allcustomer,$jsonData_allcustomer);
+$all_custmer=json_decode($all_cust);
+//sprint_r($all_custmer);
+$cust_me=array();
+echo $cust_email=$order_data['billing']['email'];
+
+$creat_cutom=0;
+
+	foreach($all_custmer as $cust)
+	{
+	if($cust->Email==$cust_email)
+	{
+	$creat_cutom=1;
+	
+	$cut_public=$cust->DebtorPublicId;
+	}
+	}
+
+	if($creat_cutom==0)
+	{
+		 $creat_cutom; 
+		 $url=$apiurl."/v1/debtors/debtor";
+$request_debtors=array( 
+  "CreditorPublicId"=> $CreditorPublicId,
+  "Name"=> $order_data['billing']['first_name'].' '.$order_data['billing']['last_name'],
+  "Address"=>$order_data['billing']['address_1'].' '.$order_data['billing']['address_2'],
+  "ZipCode"=>$order_data['billing']['postcode'],
+  "City"=> $order_data['billing']['city'],
+  "CountryCode"=> $order_data['billing']['country'],
+  "Email"=>$order_data['billing']['email'],
+  "ContactName"=> $order_data['billing']['first_name'],
+  "ContactEmail"=> $order_data['billing']['email']);
+  $jsonDataDebtors = json_encode($request_debtors);
+ 
+  
+$output=creating_products($url,$jsonDataDebtors);
+$Outcome=json_decode($output);
+
+$cut_public=$Outcome['PublicId'];
+	//$product_public[]=$Outcome;
+		
+		}
+		
+		
 		foreach ( $items as $item ) {
 			
  $product_name = $item['name'];
@@ -370,62 +419,22 @@ $product_public=array();
   "BookKeepingSalesNonEUAccount"=> 3108,
   "BookKeepingPurchaseAccount"=> 4000
   );
- $get_allproduct="https://apitest.billecta.com/v1/products/products/$CreditorPublicId/?externalid=$product_id";
+  $get_allproduct=$apiurl."/v1/products/products/$CreditorPublicId/?externalid=$product_id";
+
  $jsonData_allproduct=array();
  $jsonData_allproduct=json_encode($jsonData_allproduct);
 $all_pro=getall_products($get_allproduct,$jsonData_allproduct);
 $all_products=json_decode($all_pro);
-// Get all the customer
- $get_allcustomer="https://apitest.billecta.com/v1/debtors/debtors/$CreditorPublicId";
- $jsonData_allcustomer=array();
- $jsonData_allcustomer=json_encode($jsonData_allcustomer);
-$all_cust=getall_products($get_allcustomer,$jsonData_allcustomer);
-$all_custmer=json_decode($all_cust);
-//print_r($all_custmer);
-$cust_me=array();
-$cust_email=$order_data['billing']['email'];
-$creat_cutom=0;
-	foreach($all_custmer as $cust)
-	{
-	if($cust->Email==$cust_email)
-	{
-	$creat_cutom=1;
-	
-	$cut_public=$cust->DebtorPublicId;
 
-	}
-	}
-	if($creat_cutom==0)
-	{$url="https://apitest.billecta.com/v1/debtors/debtor";
-$request=array( 
-  "CreditorPublicId"=> $CreditorPublicId,
-  "Name"=> $order_data['billing']['first_name'].' '.$order_data['billing']['last_name'],
-  "Address"=>$order_data['billing']['address_1'].' '.$order_data['billing']['address_2'],
-  "ZipCode"=>$order_data['billing']['postcode'],
-  "City"=> $order_data['billing']['city'],
-  "CountryCode"=> $order_data['billing']['country'],
-  "Email"=>$order_data['billing']['email'],
-  "ContactName"=> $order_data['billing']['first_name'],
-  "ContactEmail"=> $order_data['billing']['email']);
-  $jsonDataEncoded = json_encode($request);
- 
-  
-$output=CurlSendPostRequest($url,$jsonDataEncoded);
-$Outcome=json_decode($output);
-$cut_public=$Outcome['PublicId'];
-	//$product_public[]=$Outcome;
-		
-		}
-	
 	// eND OF THE CUSTOMER CHECKING
-exit;
+
 //print_r($all_products);
 $pro_me=array();
+
 foreach($all_products as $prod)
 	{
-$pro_me[]=$prod->ProductExternalId;
-	}
-if(!in_array($product_id,$pro_me))
+
+if($prod->ProductExternalId!=$product_id)
 	{
 	
 	
@@ -435,20 +444,19 @@ $jsonData_product = json_encode($product_request);
 $output1=creating_products($product_url,$jsonData_product);
  
 $obj=json_decode($output1,true);
-print_r($obj);
-$product_public[]=$output1;	
+$product_public[]=$obj['PublicId'];
 	//$product_public[]=$Outcome;
-	}else{
+	}else if($prod->ProductExternalId==$product_id){
 	$product_public[]=$prod->ProductPublicId;
 	$pro_descr=$prod->Description;
 		
 	}
-	
+	}
  
 }
-print_r($product_public['0']);
- 
-	
+$product_public=array_filter($product_public);
+$product_public=array_values($product_public);
+
 		//echo $order_data['currency'];
 		//print_r($order_data);
 	
@@ -487,60 +495,70 @@ print_r($product_public['0']);
         return $data;
     }
 	
-	 function Creating_invoice($url,$request)
-    {
-       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
-	   $ch = curl_init($url);
-        $options = array(
-                CURLOPT_RETURNTRANSFER => false,         // return web page
-                CURLOPT_HEADER         => false,        // don't return headers
-                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
-               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
-			   
-                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
-                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
-                CURLOPT_TIMEOUT        => 20,          // timeout on response
-                CURLOPT_POST            => 1,            // i am sending post data
-                CURLOPT_POSTFIELDS     => $request,    // this are my post vars
-                CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
-                CURLOPT_SSL_VERIFYPEER => false,        //
-                CURLOPT_VERBOSE        => 1,
-                CURLOPT_HTTPHEADER     => array(
-				"Authorization: Basic $authentication",
-                    "Content-Type: application/json",
-					"Content-Length:". strlen($request))    
-        );
-		//print_r($options);
-        curl_setopt_array($ch,$options);
-        $data = curl_exec($ch);
-	
-        $curl_errno = curl_errno($ch);
-        $curl_error = curl_error($ch);
-        //echo $curl_errno;
-        //echo $curl_error;
-        curl_close($ch);
-        return $data;
-    }
 	//	print_r($order_data['billing']);
 	
 //Creating the first invoice
 $current_date=date("Y-m-d h:i:s");
 $NewDate=date('Y-m-d h:i:s', strtotime("+3 days"));
-	$url="https://apitest.billecta.com/v1/invoice/action";
+	$url=$apiurl."/v1/invoice/action";
+	
+	$full_inovice=$_POST['billecta_payment-inoice_fee'];
+	
+	$total_tax= array("CurrencyCode"=> "SEK",
+        "Value"=> 12500,
+        "ValueForView"=> 125);
+		 
+        $unit_price=array("CurrencyCode"=> "SEK",
+        "Value"=> $product_total,
+        "ValueForView"=> 100);
+		$records=array(array("ProductPublicId"=>$product_public[0],
+      "SequenceNo"=> 0,
+      "Units"=> "pairs",
+      "ArticleDescription"=> $product_name,
+      "Quantity"=> 1,
+	  
+      "UnitPrice"=>$unit_price,
+      "DiscountAmount"=> null,
+      "DiscountPercentage"=> 0,
+      "DiscountType"=> "Amount",
+      "VAT"=> 25,
+       "VatIsIncluded"=> false,
+      "Hidden"=> false,
+      "TotalIncVAT"=>$total_tax
+));
+$invoice_fee=array(
+    "CurrencyCode"=> "SEK",
+    "Value"=> $full_inovice*100,
+    "ValueForView"=> $full_inovice);
+  
 $request=array( 
   "CreditorPublicId"=> $CreditorPublicId,
-  "DebtorPublicId"=> $publicIdcustomer,
+  "DebtorPublicId"=> $cut_public,
   "InvoiceDate"=>$current_date,
   "DueDate"=> $NewDate,
-  "DeliveryDate" =>null,
-  "Records"=>array("ProductPublicId"=>$product_public['0'],"ArticleDescription"=>$pro_descr,""),
+"DeliveryDate" =>null,
+  "Records"=>$records,
+  "OurReference"=> "John Doe",
+  "DeliveryMethod"=> "Email",
+  "CommunicationLanguage"=> "SV",
+  "Message"=> "This is first invoice created by me ",
+  "InvoiceFee"=> $incoice_fee,
+  "VatIsIncluded"=> false,
+  "SendByMailIfEmailNotViewedInDays"=> null,
+  "SplitInvoice"=> null,
+  "InvoicePDF"=>null,
+  "CreditingInvoicePublicId"=> null,
+  "ExternalReference"=> null
   
-);
+  );
+
   $jsonDataEncoded = json_encode($request);
  
-  
+
 $output=CurlSendPostRequest($url,$jsonDataEncoded);
+
 $Outcome=json_decode($output);
+print_r($Outcome);
 echo $publicIdcustomer=$Outcome['PublicId'];
 //end invoice
 	exit;
@@ -574,10 +592,18 @@ echo $publicIdcustomer=$Outcome['PublicId'];
 			  $this->full_payment = $this->get_option( 'Full_payment' );
 			   $this->inoice_fee = $this->get_option( 'inoice_fee' );
 			    $this->num_invoices = $this->get_option( 'num_invoices' );
-				 $this->payment_mode = $this->get_option( 'payment_mode' );
+				 $this->payment_mode = $this->get_option( 'mode' );
+				 if($this->payment_mode=="yes")
+				 {
+					$this->payment_mode= "https://api.billecta.com";
+				 }else{
+					 
+					 $this->payment_mode="https://apitest.billecta.com";
+					 
+				 }
 				  $this->inoice_fee_partial_option1 = $this->get_option( 'inoice_fee_partial_option1' );
 				   $this->registration_fee_option1 = $this->get_option( 'registration_fee_option1' );
-				     $this->payment_mode = $this->get_option( 'payment_mode' );
+				  //   $this->payment_mode = $this->get_option( 'payment_mode' );
 			
 					   $this->payment_username = $this->get_option( 'username' );
 					     $this->payment_password = $this->get_option( 'password' );
@@ -590,7 +616,7 @@ echo $publicIdcustomer=$Outcome['PublicId'];
 			 if($this->full_payment=="yes")
 			 {?>
 				Full payment <input type="radio"  id="<?php echo $this->id; ?>-payment-option" name="<?php echo $this->id; ?>-payment-option" value="full" />
-                  <p id="full_content">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee"  /></p>
+                  <p id="full_content">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee" value="<?php echo $this->inoice_fee;?>"				  /></p>
 				<?php }
 				 if($this->partial_payment=="yes")
 			 {?><br />
