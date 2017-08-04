@@ -266,6 +266,7 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	public function process_payment( $order_id ) {
 		global $woocommerce;
 		//print_r($_POST);
+		 
 		$CreditorPublicId=$_POST['billecta_payment-CreditorPublicId'];
 		$apiurl=$_POST['billecta_payment-payment_mode'];
 		$order = new WC_Order( $order_id );
@@ -345,7 +346,6 @@ function creating_products($url,$request)
     }
 	$product_url=$apiurl."/v1/products/products";
 $product_public=array();
-
 // Get all the customer
  $get_allcustomer=$apiurl."/v1/debtors/debtors/$CreditorPublicId";
  $jsonData_allcustomer=array();
@@ -355,9 +355,7 @@ $all_custmer=json_decode($all_cust);
 //sprint_r($all_custmer);
 $cust_me=array();
 echo $cust_email=$order_data['billing']['email'];
-
 $creat_cutom=0;
-
 	foreach($all_custmer as $cust)
 	{
 	if($cust->Email==$cust_email)
@@ -367,13 +365,13 @@ $creat_cutom=0;
 	$cut_public=$cust->DebtorPublicId;
 	}
 	}
-
 	if($creat_cutom==0)
 	{
 		 $creat_cutom; 
 		 $url=$apiurl."/v1/debtors/debtor";
 $request_debtors=array( 
   "CreditorPublicId"=> $CreditorPublicId,
+  "DebtorExternalId"=>"25",
   "Name"=> $order_data['billing']['first_name'].' '.$order_data['billing']['last_name'],
   "Address"=>$order_data['billing']['address_1'].' '.$order_data['billing']['address_2'],
   "ZipCode"=>$order_data['billing']['postcode'],
@@ -387,7 +385,6 @@ $request_debtors=array(
   
 $output=creating_products($url,$jsonDataDebtors);
 $Outcome=json_decode($output);
-
 $cut_public=$Outcome['PublicId'];
 	//$product_public[]=$Outcome;
 		
@@ -419,24 +416,19 @@ $cut_public=$Outcome['PublicId'];
   "BookKeepingSalesNonEUAccount"=> 3108,
   "BookKeepingPurchaseAccount"=> 4000
   );
-  $get_allproduct=$apiurl."/v1/products/products/$CreditorPublicId/?externalid=$product_id";
-
+  $get_allproduct=$apiurl."/v1/products/productbyexternalid/$CreditorPublicId/?externalid=$product_id";
  $jsonData_allproduct=array();
  $jsonData_allproduct=json_encode($jsonData_allproduct);
 $all_pro=getall_products($get_allproduct,$jsonData_allproduct);
+
 $all_products=json_decode($all_pro);
-
 	// eND OF THE CUSTOMER CHECKING
-
+//print_r($all_products);
 //print_r($all_products);
 $pro_me=array();
 
-foreach($all_products as $prod)
-	{
-
-if($prod->ProductExternalId!=$product_id)
-	{
-	
+	if(empty($all_products->ProductPublicId))
+	{ 
 	
 $jsonData_product = json_encode($product_request);
  
@@ -446,17 +438,16 @@ $output1=creating_products($product_url,$jsonData_product);
 $obj=json_decode($output1,true);
 $product_public[]=$obj['PublicId'];
 	//$product_public[]=$Outcome;
-	}else if($prod->ProductExternalId==$product_id){
-	$product_public[]=$prod->ProductPublicId;
-	$pro_descr=$prod->Description;
+	}else{
+	 $product_public[]=$all_products->ProductPublicId;
+	 $pro_descr=$all_products->Description;
 		
 	}
-	}
+	
  
 }
 $product_public=array_filter($product_public);
 $product_public=array_values($product_public);
-
 		//echo $order_data['currency'];
 		//print_r($order_data);
 	
@@ -551,12 +542,9 @@ $request=array(
   "ExternalReference"=> null
   
   );
-
   $jsonDataEncoded = json_encode($request);
  
-
 $output=CurlSendPostRequest($url,$jsonDataEncoded);
-
 $Outcome=json_decode($output);
 print_r($Outcome);
 echo $publicIdcustomer=$Outcome['PublicId'];
