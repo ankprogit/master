@@ -273,7 +273,55 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 $items = $order->get_items();
 	$order1 = wc_get_order( $order_id );
 		$order_data = $order1->get_data();
-		
+		echo "<pre>";
+		//print_r($order_data);
+		echo "</pre>";
+		echo "<pre>";
+		//print_r($items);
+				echo "</pre>";
+	//	exit;
+	 function put_request($url,$request)
+    {
+       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+	   $ch = curl_init($url);
+        $options = array(
+                CURLOPT_RETURNTRANSFER => true,         // return web page
+                CURLOPT_HEADER         => true,        // don't return headers
+                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
+               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
+			   CURLOPT_CUSTOMREQUEST =>"PUT",
+                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
+                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
+                CURLOPT_TIMEOUT        => 20,          // timeout on response
+                         // i am sending post data
+             CURLOPT_POSTFIELDS     => $request,    // this are my post vars
+                CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
+                CURLOPT_SSL_VERIFYPEER => false,        //
+                CURLOPT_VERBOSE        => 1,
+                CURLOPT_HTTPHEADER     => array(
+				"Authorization: Basic $authentication",
+                    "Content-Type: application/json",
+					"Content-Length:1000")    
+        );
+		//print_r($options);
+        curl_setopt_array($ch,$options);
+        $data = curl_exec($ch);
+	
+        $curl_errno = curl_errno($ch);
+        $curl_error = curl_error($ch);
+        //echo $curl_errno;
+        //echo $curl_error;
+        curl_close($ch);
+        return $data;
+    }
+	echo $inv_url=$apiurl."/v1/invoice/attest/9149854243";
+	 $jsonDataEncoded=array();
+ $jsonDataEncoded=json_encode($jsonDataEncoded);
+	echo $test_invoice=put_request($inv_url,$jsonDataEncoded);
+	$test_invoice=json_decode($test_invoice);
+	print_r($test_invoice);
+	exit;
+	
 function getall_products($url,$request)
     {
        $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
@@ -390,7 +438,8 @@ $cut_public=$Outcome['PublicId'];
 		
 		}
 		
-		
+		 $SIngproduct_data=array();
+		 $all_Products=array();
 		foreach ( $items as $item ) {
 			
  $product_name = $item['name'];
@@ -401,6 +450,31 @@ $cut_public=$Outcome['PublicId'];
  
 	 
   $product_variation_id = $item['variation_id'];
+  $total_tax= array("CurrencyCode"=> "SEK",
+        "Value"=> $product_subtotal_tax,
+        "ValueForView"=> $product_subtotal_tax);
+		 
+        $unit_price=array("CurrencyCode"=> "SEK",
+        "Value"=> $product_total,
+        "ValueForView"=> $product_total);
+		
+  $SIngproduct_data=array(
+      "SequenceNo"=> 0,
+      "Units"=> "pairs",
+      "ArticleDescription"=> $product_name,
+      "Quantity"=> $product_quantity,
+	  
+      "UnitPrice"=>$unit_price,
+      "DiscountAmount"=> null,
+      "DiscountPercentage"=> 0,
+      "DiscountType"=> "Amount",
+      "VAT"=> 25,
+       "VatIsIncluded"=> false,
+      "Hidden"=> false,
+      "TotalIncVAT"=>$total_tax
+);
+
+
 	$product_request=array("CreditorPublicId"=>$CreditorPublicId,
 	"ArticleNumber"=> $product_id,
   "ProductExternalId"=> $product_id,
@@ -437,15 +511,20 @@ $output1=creating_products($product_url,$jsonData_product);
  
 $obj=json_decode($output1,true);
 $product_public[]=$obj['PublicId'];
-	//$product_public[]=$Outcome;
+if(!empty($obj['PublicId']))
+{
+  $SIngproduct_data['ProductPublicId']=$obj['PublicId'];
+}	//$product_public[]=$Outcome;
 	}else{
 	 $product_public[]=$all_products->ProductPublicId;
+	 $SIngproduct_data['ProductPublicId']=$all_products->ProductPublicId;
 	 $pro_descr=$all_products->Description;
 		
 	}
-	
+	$all_Products[]=$SIngproduct_data;
  
 }
+
 $product_public=array_filter($product_public);
 $product_public=array_values($product_public);
 		//echo $order_data['currency'];
@@ -486,6 +565,8 @@ $product_public=array_values($product_public);
         return $data;
     }
 	
+	
+		
 	//	print_r($order_data['billing']);
 	
 //Creating the first invoice
@@ -495,28 +576,8 @@ $NewDate=date('Y-m-d h:i:s', strtotime("+3 days"));
 	
 	$full_inovice=$_POST['billecta_payment-inoice_fee'];
 	
-	$total_tax= array("CurrencyCode"=> "SEK",
-        "Value"=> 12500,
-        "ValueForView"=> 125);
-		 
-        $unit_price=array("CurrencyCode"=> "SEK",
-        "Value"=> $product_total,
-        "ValueForView"=> 100);
-		$records=array(array("ProductPublicId"=>$product_public[0],
-      "SequenceNo"=> 0,
-      "Units"=> "pairs",
-      "ArticleDescription"=> $product_name,
-      "Quantity"=> 1,
-	  
-      "UnitPrice"=>$unit_price,
-      "DiscountAmount"=> null,
-      "DiscountPercentage"=> 0,
-      "DiscountType"=> "Amount",
-      "VAT"=> 25,
-       "VatIsIncluded"=> false,
-      "Hidden"=> false,
-      "TotalIncVAT"=>$total_tax
-));
+	
+		$records=$all_Products;
 $invoice_fee=array(
     "CurrencyCode"=> "SEK",
     "Value"=> $full_inovice*100,
@@ -544,10 +605,29 @@ $request=array(
   );
   $jsonDataEncoded = json_encode($request);
  
-$output=CurlSendPostRequest($url,$jsonDataEncoded);
+//$output=CurlSendPostRequest($url,$jsonDataEncoded);
 $Outcome=json_decode($output);
-print_r($Outcome);
-echo $publicIdcustomer=$Outcome['PublicId'];
+print_r($Outcome['PublicId']);
+$publicIdcustomer=$Outcome['PublicId'];
+//5592765983
+//9149854243
+if(!empty($publicIdcustomer))
+{
+	$inv_url=$apiurl."/v1/invoice/attest/$publicIdcustomer";
+	 $jsonDataEncoded=array();
+ $jsonDataEncoded=json_encode($jsonDataEncoded);
+	$test_invoice=put_request($inv_url,$jsonDataEncoded);
+	print_r($test_invoice);
+}else{
+	echo "not in mirrir";
+	$inv_url=$apiurl."/v1/invoice/attest/5592765983";
+	 $jsonDataEncoded=array();
+ $jsonDataEncoded=json_encode($jsonDataEncoded);
+	$test_invoice=put_request($inv_url,$jsonDataEncoded);
+	print_r($test_invoice);
+	
+}
+
 //end invoice
 	exit;
 		// Mark as on-hold (we're awaiting the cheque)
@@ -567,7 +647,22 @@ echo $publicIdcustomer=$Outcome['PublicId'];
 	}
 	public function payment_fields(){
 		?>
-       
+       <script>
+	   jQuery(document).ready(function(){
+		   jQuery(".pay").click(function(){
+			   jQuery( ".same" ).each(function( index ) {
+ jQuery(this).css('display','none');
+});
+			   var myId=jQuery(this).attr("id");
+			  // alert(myId);
+			   jQuery("."+myId).css('display','block');
+			   
+		   });
+		   
+		   
+	   }
+	   );
+	   </script>
 		<fieldset>
 			<p class="form-row form-row-wide">
 				<label for="<?php echo $this->id; ?>-admin-note"><?php echo esc_attr($this->description); ?> <span class="required">*</span></label>
@@ -603,26 +698,26 @@ echo $publicIdcustomer=$Outcome['PublicId'];
 	  $this->partial_payment = $this->get_option( 'partial_payment' );
 			 if($this->full_payment=="yes")
 			 {?>
-				Full payment <input type="radio"  id="<?php echo $this->id; ?>-payment-option" name="<?php echo $this->id; ?>-payment-option" value="full" />
-                  <p id="full_content">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee" value="<?php echo $this->inoice_fee;?>"				  /></p>
+				Full payment <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="full" />
+                  <p class="<?php echo $this->id; ?>-payment-option1 same" id="full_content" style="display:none">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee" value="<?php echo $this->inoice_fee;?>"				  /></p>
 				<?php }
 				 if($this->partial_payment=="yes")
 			 {?><br />
-				Partial Payment <input type="radio"  id="<?php echo $this->id; ?>-payment-option" name="<?php echo $this->id; ?>-payment-option"  value="par"/>
-                 <p id="par_content">Amount of parts <?php echo $this->num_invoices;?> 
+				Partial Payment <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option2" name="<?php echo $this->id; ?>-payment-option"  value="par"/>
+                 <div id="par_content" class="same <?php echo $this->id; ?>-payment-option2" style="display:none">Amount of parts <?php echo $this->num_invoices;?> 
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par"  value="<?Php echo $this->num_invoices;?>" />
-                     <div>Invoicing fee: <?php echo $this->inoice_fee_partial_option1;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option1_par" name="<?php echo $this->id;?>-inoice_fee_partial_option1_par"  value="<?Php echo $this->inoice_fee_partial_option1;?>"/><input type="hidden" id="<?php echo $this->id;?>-registration_fee_option1" name="<?php echo $this->id;?>-registration_fee_option1"  value="<?php echo  $this->registration_fee_option1; ?>"/></div>
+                     <div>Invoicing fee: <?php echo $this->inoice_fee_partial_option1;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option1_par" name="<?php echo $this->id;?>-inoice_fee_partial_option1_par"  value="<?Php echo $this->inoice_fee_partial_option1;?>"/><input type="hidden" id="<?php echo $this->id;?>-registration_fee_option1" name="<?php echo $this->id;?>-registration_fee_option1"  value="<?php echo  $this->registration_fee_option1; ?>"/></div>   </div>
                  
 				<?php }
 			 
 			 //echo $this->settings->Full_payment."<div>hhhhhhhhhhhh".$this->Full_payment."</div>";
 			 
-			 ?>	     <input type="hidden" value="<?php echo $this->payment_username;?>" name="<?php echo $this->id; ?>-username" />
+			 ?>	    <input type="hidden" value="<?php echo $this->payment_username;?>" name="<?php echo $this->id; ?>-username" />
                   <input type="hidden" value="<?php echo $this->payment_password;?>" name="<?php echo $this->id; ?>-payment_password" />
            
              <input type="hidden" value="<?php echo $this->payment_mode;?>" name="<?php echo $this->id; ?>-payment_mode" />
               <input type="hidden" value="<?php echo $this->CreditorPublicId;?>" name="<?php echo $this->id; ?>-CreditorPublicId" />
-               </p>
+             
                		
 			<div class="clear"></div>
 		</fieldset>
