@@ -273,54 +273,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 $items = $order->get_items();
 	$order1 = wc_get_order( $order_id );
 		$order_data = $order1->get_data();
-		echo "<pre>";
-		//print_r($order_data);
-		echo "</pre>";
-		echo "<pre>";
-		//print_r($items);
-				echo "</pre>";
-	//	exit;
-	 function put_request($url,$request)
-    {
-       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
-	   $ch = curl_init($url);
-        $options = array(
-                CURLOPT_RETURNTRANSFER => true,         // return web page
-                CURLOPT_HEADER         => true,        // don't return headers
-                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
-               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
-			   CURLOPT_CUSTOMREQUEST =>"PUT",
-                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
-                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
-                CURLOPT_TIMEOUT        => 20,          // timeout on response
-                         // i am sending post data
-             CURLOPT_POSTFIELDS     => $request,    // this are my post vars
-                CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
-                CURLOPT_SSL_VERIFYPEER => false,        //
-                CURLOPT_VERBOSE        => 1,
-                CURLOPT_HTTPHEADER     => array(
-				"Authorization: Basic $authentication",
-                    "Content-Type: application/json",
-					"Content-Length:1000")    
-        );
-		//print_r($options);
-        curl_setopt_array($ch,$options);
-        $data = curl_exec($ch);
 	
-        $curl_errno = curl_errno($ch);
-        $curl_error = curl_error($ch);
-        //echo $curl_errno;
-        //echo $curl_error;
-        curl_close($ch);
-        return $data;
-    }
-	echo $inv_url=$apiurl."/v1/invoice/attest/9149854243";
-	 $jsonDataEncoded=array();
- $jsonDataEncoded=json_encode($jsonDataEncoded);
-	echo $test_invoice=put_request($inv_url,$jsonDataEncoded);
-	$test_invoice=json_decode($test_invoice);
-	print_r($test_invoice);
-	exit;
+
 	
 function getall_products($url,$request)
     {
@@ -453,6 +407,7 @@ $cut_public=$Outcome['PublicId'];
   $total_tax= array("CurrencyCode"=> "SEK",
         "Value"=> $product_subtotal_tax,
         "ValueForView"=> $product_subtotal_tax);
+
 		 
         $unit_price=array("CurrencyCode"=> "SEK",
         "Value"=> $product_total,
@@ -473,8 +428,6 @@ $cut_public=$Outcome['PublicId'];
       "Hidden"=> false,
       "TotalIncVAT"=>$total_tax
 );
-
-
 	$product_request=array("CreditorPublicId"=>$CreditorPublicId,
 	"ArticleNumber"=> $product_id,
   "ProductExternalId"=> $product_id,
@@ -494,13 +447,11 @@ $cut_public=$Outcome['PublicId'];
  $jsonData_allproduct=array();
  $jsonData_allproduct=json_encode($jsonData_allproduct);
 $all_pro=getall_products($get_allproduct,$jsonData_allproduct);
-
 $all_products=json_decode($all_pro);
 	// eND OF THE CUSTOMER CHECKING
 //print_r($all_products);
 //print_r($all_products);
 $pro_me=array();
-
 	if(empty($all_products->ProductPublicId))
 	{ 
 	
@@ -524,7 +475,6 @@ if(!empty($obj['PublicId']))
 	$all_Products[]=$SIngproduct_data;
  
 }
-
 $product_public=array_filter($product_public);
 $product_public=array_values($product_public);
 		//echo $order_data['currency'];
@@ -571,7 +521,7 @@ $product_public=array_values($product_public);
 	
 //Creating the first invoice
 $current_date=date("Y-m-d h:i:s");
-$NewDate=date('Y-m-d h:i:s', strtotime("+3 days"));
+$NewDate=date('Y-m-d h:i:s', strtotime("+10 days"));
 	$url=$apiurl."/v1/invoice/action";
 	
 	$full_inovice=$_POST['billecta_payment-inoice_fee'];
@@ -605,33 +555,35 @@ $request=array(
   );
   $jsonDataEncoded = json_encode($request);
  
-//$output=CurlSendPostRequest($url,$jsonDataEncoded);
+$output=CurlSendPostRequest($url,$jsonDataEncoded);
 $Outcome=json_decode($output);
-print_r($Outcome['PublicId']);
-$publicIdcustomer=$Outcome['PublicId'];
+
+//$Outcome=json_decode($Outcome['PublicId']);
+echo $Outcome=json_decode('"'.$Outcome['PublicId'].'"', 2);
+print_r($Outcome);
+echo "ggwggg".$publicIdcustomer=$Outcome['PublicId'];
 //5592765983
 //9149854243
 if(!empty($publicIdcustomer))
 {
-	$inv_url=$apiurl."/v1/invoice/attest/$publicIdcustomer";
-	 $jsonDataEncoded=array();
- $jsonDataEncoded=json_encode($jsonDataEncoded);
-	$test_invoice=put_request($inv_url,$jsonDataEncoded);
-	print_r($test_invoice);
-}else{
-	echo "not in mirrir";
-	$inv_url=$apiurl."/v1/invoice/attest/5592765983";
-	 $jsonDataEncoded=array();
- $jsonDataEncoded=json_encode($jsonDataEncoded);
-	$test_invoice=put_request($inv_url,$jsonDataEncoded);
-	print_r($test_invoice);
-	
-}
+	$ch = curl_init("https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer");
+        $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+//Use the CURLOPT_PUT option to tell cURL that
+//this is a PUT request.
+curl_setopt($ch, CURLOPT_PUT, true);
+curl_setopt($ch, CURLOPT_HEADER, false);
+ 
+//We want the result / output returned.
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+				"Authorization: Basic $authentication"));
 
-//end invoice
-	exit;
-		// Mark as on-hold (we're awaiting the cheque)
-		$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
+ 
+ 
+ $response = curl_exec($ch);
+ 
+if(empty($response))
+{	$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
 		// Reduce stock levels
 		$order->reduce_order_stock();
 		if(isset($_POST[ $this->id.'-admin-note']) && trim($_POST[ $this->id.'-admin-note'])!=''){
@@ -644,6 +596,19 @@ if(!empty($publicIdcustomer))
 			'result' => 'success',
 			'redirect' => $this->get_return_url( $order )
 		);	
+	
+	}else{
+	
+	return "Something went wrong";
+}
+}else{
+	return "Something went wrong invoic3re is nohyt generated";
+	
+}
+//end invoice
+	//exit;
+		// Mark as on-hold (we're awaiting the cheque)
+	
 	}
 	public function payment_fields(){
 		?>
