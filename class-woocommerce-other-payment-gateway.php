@@ -1,3 +1,4 @@
+
 <?php 
 class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	public function __construct(){
@@ -39,25 +40,15 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					'type' 			=> 'checkbox',
 					'label' 		=> __( 'Full payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> '0'
-					),'inoice_fee' =>
-  array(
-  'title' 		=> __( 'invoice_fee', 'woocommerce-billecta-payment-gateway' ),
-    'desc'    => __( 'This controls the position of the currency symbol.', 'woocommerce-billecta-payment-gateway' ),
-    'id'      => 'woocommerce_currency_pos',
-    'css'     => 'min-width:150px;',
-    'std'     => 'No Fee', // WooCommerce < 2.0
-    'default' => 'no', // WooCommerce >= 2.0
-    'type'    => 'select',
-	'label' 		=> __( 'Invoice fee', 'woocommerce-billecta-payment-gateway' ),
-    'options' => array(
- '0'        => __( 'no fee', 'woocommerce-billecta-payment-gateway' ),
-      '5'        => __( '5', 'woocommerce-billecta-payment-gateway' ),
-      '10'       => __( '10', 'woocommerce-billecta-payment-gateway' ),
-      '15'  => __( '15', 'woocommerce-billecta-payment-gateway' ),
-      '20' => __( '20', 'woocommerce-billecta-payment-gateway' )
-    ),
-    'desc_tip' =>  true,
-  ),'partial_payment' => array(
+					),
+							'inoice_fee' => array(
+						'title' 		=> __( 'Invoice Fee', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the title', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( 'Invice fee', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+					'partial_payment' => array(
 					'title' 		=> __( 'Partial Payment', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
@@ -115,44 +106,83 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
     ),
 					'label' 		=> __( 'Number of invoices option 1 Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
-					),'inoice_fee_partial_option1' =>
-  array(
-  'title' 		=> __( 'invoice_fee_option', 'woocommerce-billecta-payment-gateway' ),
-    'desc'    => __( 'This controls the position of the currency symbol.', 'woocommerce-billecta-payment-gateway' ),
-    'id'      => 'woocommerce_currency_pos',
-    'css'     => 'min-width:150px;',
-    'std'     => 'No Fee', // WooCommerce < 2.0
-    'default' => 'no', // WooCommerce >= 2.0
-    'type'    => 'select',
-	'label' 		=> __( 'Invoice fee Option 1', 'woocommerce-billecta-payment-gateway' ),
-    'options' => array(
- '0'        => __( 'no fee', 'woocommerce-billecta-payment-gateway' ),
-      '5'        => __( '5', 'woocommerce-billecta-payment-gateway' ),
-      '10'       => __( '10', 'woocommerce-billecta-payment-gateway' ),
-      '15'  => __( '15', 'woocommerce-billecta-payment-gateway' ),
-      '20' => __( '20', 'woocommerce-billecta-payment-gateway' )
-    ),
-    'desc_tip' =>  true,
-  ),
-					'registration_fee_option1' => array(
-					'title' 		=> __( 'Registration fee:', 'woocommerce-billecta-payment-gateway' ),
-					'type' 			=> 'select',
-					 'options' => array(
- '2'        => __( '2', 'woocommerce-billecta-payment-gateway' ),
-      '3'        => __( '3', 'woocommerce-billecta-payment-gateway' ),
-      '4'       => __( '4', 'woocommerce-billecta-payment-gateway' ),
-      '5'  => __( '5', 'woocommerce-billecta-payment-gateway' ),
-      '6' => __( '6', 'woocommerce-billecta-payment-gateway' ),
-	  '7'  => __( '7', 'woocommerce-billecta-payment-gateway' ),
-	  '8'  => __( '8', 'woocommerce-billecta-payment-gateway' ),
-	  '9'  => __( '9', 'woocommerce-billecta-payment-gateway' ),
-	  '10'  => __( '10', 'woocommerce-billecta-payment-gateway' ),
-	  '11'  => __( '11', 'woocommerce-billecta-payment-gateway' ),
-	  '12'  => __( '12', 'woocommerce-billecta-payment-gateway' ),
-    ),
-					'label' 		=> __( 'Registration option 1 Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
+					),
+					
+					'inoice_fee_partial_option1' => array(
+						'title' 		=> __( 'invoice_fee_option1', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option1' => array(
+						'title' 		=> __( 'Registration fee Opiton2', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option1' => array(
+					'title' 		=> __( 'Partial Payment Option2', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option2', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
+					'inoice_fee_partial_option2' => array(
+						'title' 		=> __( 'Invoice fee Option 2', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option2' => array(
+						'title' 		=> __( 'Registration fee Option 2', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option3' => array(
+					'title' 		=> __( 'Partial Payment Option3', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option3', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option3' => array(
+						'title' 		=> __( 'Invoice fee Option 3', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option3' => array(
+						'title' 		=> __( 'Registration fee Option 3', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option4' => array(
+					'title' 		=> __( 'Partial Payment Option4', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option4', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option4' => array(
+						'title' 		=> __( 'Invoice fee Option 4', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option4' => array(
+						'title' 		=> __( 'Registration fee Option 4', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+					
 	'text_on_button' => array(
 					'title' 		=> __( 'Text on Button', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'text',
@@ -274,7 +304,6 @@ $items = $order->get_items();
 	$order1 = wc_get_order( $order_id );
 		$order_data = $order1->get_data();
 	
-
 	
 function getall_products($url,$request)
     {
@@ -407,7 +436,6 @@ $cut_public=$Outcome['PublicId'];
   $total_tax= array("CurrencyCode"=> "SEK",
         "Value"=> $product_subtotal_tax,
         "ValueForView"=> $product_subtotal_tax);
-
 		 
         $unit_price=array("CurrencyCode"=> "SEK",
         "Value"=> $product_total,
@@ -576,14 +604,11 @@ curl_setopt($ch, CURLOPT_HEADER, true);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 				"Authorization: Basic $authentication"));
-
  
  
  $response = curl_exec($ch);
   $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
 if($httpcode==200)
-
 {	$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
 		// Reduce stock levels
 		$order->reduce_order_stock();
