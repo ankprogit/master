@@ -485,7 +485,7 @@ $product_public=array_values($product_public);
        $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
 	   $ch = curl_init($url);
         $options = array(
-                CURLOPT_RETURNTRANSFER => false,         // return web page
+                CURLOPT_RETURNTRANSFER => true,         // return web page
                 CURLOPT_HEADER         => false,        // don't return headers
                 CURLOPT_FOLLOWLOCATION => false,         // follow redirects
                // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
@@ -556,12 +556,11 @@ $request=array(
   $jsonDataEncoded = json_encode($request);
  
 $output=CurlSendPostRequest($url,$jsonDataEncoded);
-$Outcome=json_decode($output);
-
-//$Outcome=json_decode($Outcome['PublicId']);
-echo $Outcome=json_decode('"'.$Outcome['PublicId'].'"', 2);
+$Outcome=json_decode($output,2);
 print_r($Outcome);
-echo "ggwggg".$publicIdcustomer=$Outcome['PublicId'];
+//$Outcome=json_decode($Outcome['PublicId']);
+//exit;
+$publicIdcustomer=$Outcome['PublicId'];
 //5592765983
 //9149854243
 if(!empty($publicIdcustomer))
@@ -571,7 +570,7 @@ if(!empty($publicIdcustomer))
 //Use the CURLOPT_PUT option to tell cURL that
 //this is a PUT request.
 curl_setopt($ch, CURLOPT_PUT, true);
-curl_setopt($ch, CURLOPT_HEADER, false);
+curl_setopt($ch, CURLOPT_HEADER, true);
  
 //We want the result / output returned.
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -581,8 +580,10 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
  
  
  $response = curl_exec($ch);
- 
-if(empty($response))
+  $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+if($httpcode==200)
+
 {	$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
 		// Reduce stock levels
 		$order->reduce_order_stock();
@@ -599,10 +600,16 @@ if(empty($response))
 	
 	}else{
 	
-	return "Something went wrong";
+		return array(
+			'result'   => 'failure',
+    'messages' => "Attesting the invocie is failed"
+		);	
 }
 }else{
-	return "Something went wrong invoic3re is nohyt generated";
+return array(
+			'result'   => 'failure',
+    'messages' => "Customer is not added into the into the billecta"
+		);	
 	
 }
 //end invoice
