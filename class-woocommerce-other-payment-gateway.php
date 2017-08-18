@@ -48,6 +48,13 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 						'default'		=> __( 'Invice fee', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
+							'discount_fee' => array(
+						'title' 		=> __( 'Discount Fee', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'text',
+						'description' 	=> __( 'This controls the Discount on the full Payment', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
 					'partial_payment' => array(
 					'title' 		=> __( 'Partial Payment', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
@@ -683,6 +690,9 @@ return array(
 				 }
 				  $this->inoice_fee_partial_option1 = $this->get_option( 'inoice_fee_partial_option1' );
 				   $this->registration_fee_option1 = $this->get_option( 'registration_fee_option1' );
+				   
+		
+				   
 				  //   $this->payment_mode = $this->get_option( 'payment_mode' );
 			
 					   $this->payment_username = $this->get_option( 'username' );
@@ -693,6 +703,23 @@ return array(
 			   
 			 
 	  $this->partial_payment = $this->get_option( 'partial_payment' );
+	   $this->partial_payment_option2 = $this->get_option( 'partial_payment_option1' );
+	   
+	   		   	  $this->inoice_fee_partial_par_option2 = $this->get_option( 'inoice_fee_partial_option2' );
+				   $this->registration_fee_par_option2 = $this->get_option( 'registration_fee_option2' );
+				   
+	   
+	     $this->partial_payment_option3 = $this->get_option( 'partial_payment_option3' );
+		  	  $this->inoice_fee_partial_par_option3 = $this->get_option( 'inoice_fee_partial_option3' );
+				   $this->registration_fee_par_option3 = $this->get_option( 'registration_fee_option3' );
+				   
+				   
+		 $this->partial_payment_option4 = $this->get_option( 'partial_payment_option4' );
+		  	  $this->inoice_fee_partial_par_option4 = $this->get_option( 'inoice_fee_partial_option4' );
+				   $this->registration_fee_par_option4 = $this->get_option( 'registration_fee_option4' );
+		 
+		 
+	   
 			 if($this->full_payment=="yes")
 			 {?>
 				Full payment <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="full" />
@@ -700,12 +727,67 @@ return array(
 				<?php }
 				 if($this->partial_payment=="yes")
 			 {?><br />
-				Partial Payment <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option2" name="<?php echo $this->id; ?>-payment-option"  value="par"/>
-                 <div id="par_content" class="same <?php echo $this->id; ?>-payment-option2" style="display:none">Amount of parts <?php echo $this->num_invoices;?> 
+				Partial Payment Option 1 <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option1" name="<?php echo $this->id; ?>-payment-option"  value="par_op1"/>
+                 <div id="par_content" class="same <?php echo $this->id; ?>-payment_par_option1" style="display:none">Amount of parts <?php echo $this->num_invoices;?> 
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par"  value="<?Php echo $this->num_invoices;?>" />
-                     <div>Invoicing fee: <?php echo $this->inoice_fee_partial_option1;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option1_par" name="<?php echo $this->id;?>-inoice_fee_partial_option1_par"  value="<?Php echo $this->inoice_fee_partial_option1;?>"/><input type="hidden" id="<?php echo $this->id;?>-registration_fee_option1" name="<?php echo $this->id;?>-registration_fee_option1"  value="<?php echo  $this->registration_fee_option1; ?>"/></div>   </div>
+                     <div>Invoicing fee: <?php echo $this->inoice_fee_partial_option1;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option1_par" name="<?php echo $this->id;?>-inoice_fee_partial_option1_par"  value="<?Php echo $this->inoice_fee_partial_option1;?>"/>
+					 <br />
+					  Registration Fee: <?php echo   $this->registration_fee_option1; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_option1" name="<?php echo $this->id;?>-registration_fee_option1"  value="<?php echo  $this->registration_fee_option1; ?>"/></div>   </div>
                  
-				<?php }
+				<?php if($this->partial_payment_option2=="yes"){
+					
+					?><br />
+						Partial Payment Option 2<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option2" name="<?php echo $this->id; ?>-payment-option"  value="par_op2"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option2" style="display:none">
+				
+				Amount of parts: 3 
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par2"  value="<?Php echo $this->num_invoices;?>" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option2;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option2_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option2"  value="<?Php echo $this->inoice_fee_partial_par_option2;?>"/> 
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option2; ?>
+					 
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option2" name="<?php echo $this->id;?>-registration_fee_par_option2"  value="<?php echo   $this->registration_fee_par_option2; ?>"/></div>   </div>
+					<?php
+					
+					
+				}			 if($this->partial_payment_option3=="yes"){
+					
+					?><br />
+						Partial Payment Option 3<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option3" name="<?php echo $this->id; ?>-payment-option"  value="par_op3"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option3" style="display:none">
+				
+				Amount of parts: 4 
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par3"  value="<?Php echo $this->num_invoices;?>" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option3;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option3_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option3"  value="<?Php echo $this->inoice_fee_partial_par_option3;?>"/>
+					 		<br /> 
+					 Registration Fee: <?php echo   $this->registration_fee_par_option3; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option3" name="<?php echo $this->id;?>-registration_fee_par_option3"  value="<?php echo   $this->registration_fee_par_option3; ?>"/></div>   </div>
+					<?php
+					
+					
+				}	 if($this->partial_payment_option4=="yes"){
+					
+					?><br />
+						Partial Payment Option 4<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="par_op4"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option4" style="display:none">
+				
+				Amount of parts: 5
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par4"  value="<?Php echo $this->num_invoices;?>" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option4;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option4_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option4"  value="<?Php echo $this->inoice_fee_partial_par_option4;?>"/>
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option4; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option4" name="<?php echo $this->id;?>-jh "  value="<?php echo   $this->registration_fee_par_option4; ?>"/></div>   </div>
+					<?php
+					
+					
+				}
+				
+				
+				}
 			 
 			 //echo $this->settings->Full_payment."<div>hhhhhhhhhhhh".$this->Full_payment."</div>";
 			 
