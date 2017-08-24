@@ -61,7 +61,7 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					'label' 		=> __( 'Partial payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
-	'num_of days_option1' => array(
+	'num_of_days_option1' => array(
 					'title' 		=> __( 'Nr of due days per invoice option1:', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'select',
 					 'options' => array(
@@ -304,11 +304,12 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 		//print_r($_POST);
 		
 		
-	echo "Option :".$option=$_POST['billecta_payment-payment-option'];
+		$days_option=$_POST['billecta_payment-num_days'];
+$option=$_POST['billecta_payment-payment-option'];
 	//$full_inovice=$_POST['billecta_payment-inoice_fee'];
 	if($option==1){
-		echo $full_inovice=$_POST['billecta_payment-inoice_fee'];
-		echo $discount_fee=$_POST['billecta_payment_discount_fee'];
+		 $full_inovice=$_POST['billecta_payment-inoice_fee'];
+		 $discount_fee=$_POST['billecta_payment_discount_fee'];
 		
 		}
 	else{
@@ -317,12 +318,12 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 		$invoices_fee="billecta_payment-inoice_fee_partial_par_option".$opt;
 		
 		$registration="billecta_payment-registration_fee_par_option".$opt;
-		echo "number of invoices:".$num_parts=$_POST[$invoices_per];
-	echo "invoices_fee  :".$full_inovice=$_POST[$invoices_fee];
-	echo "registration  :".$regist_fee=$_POST[$registration];
+	$num_parts=$_POST[$invoices_per];
+	$full_inovice=$_POST[$invoices_fee];
+	$regist_fee=$_POST[$registration];
 	}
-	exit;
-	$option=$_POST['billecta_payment-payment-option'];
+	
+	//$option=$_POST['billecta_payment-payment-option'];
 	
 			
 		 
@@ -577,13 +578,25 @@ $product_public=array_values($product_public);
 	//	print_r($order_data['billing']);
 	
 //Creating the first invoice
-$current_date=date("Y-m-d h:i:s");
-$NewDate=date('Y-m-d h:i:s', strtotime("+10 days"));
+
+for($i=1;$i<=$option;$i++)
+{
+	
+	if($i==1)
+	{
+	echo 	$current_date=date("Y-m-d h:i:s");
+		
+echo  $NewDate=date('Y-m-d h:i:s', strtotime("+".$days_option." days"));
+		
+	}else{
+		
+$current_date=$NewDate;
+	$NewDate=date('Y-m-d h:i:s', strtotime($current_date."+".$days_option." days"));	
+		
+	}
+	
+
 	$url=$apiurl."/v1/invoice/action";
-	
-	
-	
-	
 		$records=$all_Products;
 $invoice_fee=array(
     "CurrencyCode"=> "SEK",
@@ -614,15 +627,15 @@ $request=array(
  
 $output=CurlSendPostRequest($url,$jsonDataEncoded);
 $Outcome=json_decode($output,2);
-
 //$Outcome=json_decode($Outcome['PublicId']);
 //exit;
-$publicIdcustomer=$Outcome['PublicId'];
+echo "my public".$publicIdcustomer=$Outcome['PublicId'];
 //5592765983
 //9149854243
 if(!empty($publicIdcustomer))
 {
-	$ch = curl_init("https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer");
+	echo "https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer";
+	 $ch = curl_init("https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer");
         $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
 //Use the CURLOPT_PUT option to tell cURL that
 //this is a PUT request.
@@ -636,9 +649,30 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
  
  
  $response = curl_exec($ch);
-  $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+echo   "http: ".$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  
+  
 if($httpcode==200)
-{	$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
+{	}else{
+	
+		$out= array(
+			'result'   => 'failure',
+    'messages' => "Attesting the invocie is failed"
+		);	
+}
+}else{
+	
+$out= array(
+			'result'   => 'failure',
+    'messages' => "Customer is not added into the into the billecta"
+		);	
+	
+}
+
+}
+if($httpcode==200)
+{
+$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
 		// Reduce stock levels
 		$order->reduce_order_stock();
 		if(isset($_POST[ $this->id.'-admin-note']) && trim($_POST[ $this->id.'-admin-note'])!=''){
@@ -647,25 +681,13 @@ if($httpcode==200)
 		// Remove cart
 		$woocommerce->cart->empty_cart();
 		// Return thankyou redirect
-		return array(
+		$out= array(
 			'result' => 'success',
 			'redirect' => $this->get_return_url( $order )
 		);	
-	
-	}else{
-	
-		return array(
-			'result'   => 'failure',
-    'messages' => "Attesting the invocie is failed"
-		);	
-}
-}else{
-return array(
-			'result'   => 'failure',
-    'messages' => "Customer is not added into the into the billecta"
-		);	
-	
-}
+		
+}		
+return $Out;
 //end invoice
 	//exit;
 		// Mark as on-hold (we're awaiting the cheque)
@@ -722,7 +744,8 @@ return array(
 					   $this->payment_username = $this->get_option( 'username' );
 					     $this->payment_password = $this->get_option( 'password' );
 						  $this->CreditorPublicId = $this->get_option( 'CreditorPublicId' );
-						 
+						  
+			 $this->num_of_days_option1 = $this->get_option( 'num_of_days_option1' );			 
 			   
 			   
 			 
@@ -820,7 +843,9 @@ return array(
 			 
 			 //echo $this->settings->Full_payment."<div>hhhhhhhhhhhh".$this->Full_payment."</div>";
 			 
-			 ?>	    <input type="hidden" value="<?php echo $this->payment_username;?>" name="<?php echo $this->id; ?>-username" />
+			 ?>
+<input type="hidden" id="<?php echo $this->id;?>-num_days" name="<?php echo $this->id;?>-num_days" value="<?php echo $this->num_of_days_option1;?>"				  />			 
+			 <input type="hidden" value="<?php echo $this->payment_username;?>" name="<?php echo $this->id; ?>-username" />
                   <input type="hidden" value="<?php echo $this->payment_password;?>" name="<?php echo $this->id; ?>-payment_password" />
            
              <input type="hidden" value="<?php echo $this->payment_mode;?>" name="<?php echo $this->id; ?>-payment_mode" />
