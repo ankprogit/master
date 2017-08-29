@@ -1,4 +1,7 @@
 <?php 
+
+
+
 class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	public function __construct(){
 		$this->id = 'billecta_payment';
@@ -10,8 +13,17 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 		$this->enabled = $this->get_option('enabled');
 		$this->title = $this->get_option('title');
 		$this->description = $this->get_option('description');
+		$test="ff";
+		add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text'); 
+ function woo_custom_order_button_text($text) {
+	  
+    return __( $text, 'woocommerce' ); 
+}
+
+
 		add_action('woocommerce_update_options_payment_gateways_'.$this->id, array($this, 'process_admin_options'));
 	}
+
 	public function init_form_fields(){
 				$this->form_fields = array(
 					'enabled' => array(
@@ -301,9 +313,16 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	
 	public function process_payment( $order_id ) {
 		global $woocommerce;
+		$order = new WC_Order( $order_id );
+		if($_POST['payment_method']=='billecta_payment')
+		{
+			
+	
+		 $user= $_POST['billecta_payment-username'];
+  $pass=$_POST['billecta_payment-payment_password'];
 		//print_r($_POST);
-		
-		
+		  $authentication = base64_encode("$user:$pass");
+	
 		$days_option=$_POST['billecta_payment-num_days'];
 $option=$_POST['billecta_payment-payment-option'];
 	//$full_inovice=$_POST['billecta_payment-inoice_fee'];
@@ -335,9 +354,9 @@ $items = $order->get_items();
 		$order_data = $order1->get_data();
 	
 	
-function getall_products($url,$request)
+function getall_products($url,$request,$authentication)
     {
-       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+       //$authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
 	   $ch = curl_init($url);
         $options = array(
                 CURLOPT_RETURNTRANSFER => true,         // return web page
@@ -371,12 +390,12 @@ function getall_products($url,$request)
 	
 	
 //Creating the product in the billecta
-function creating_products($url,$request)
+function creating_products($url,$request,$authentication)
     {
-       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+     //  $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
 	   $ch = curl_init($url);
         $options = array(
-                CURLOPT_RETURNTRANSFER => false,         // return web page
+                CURLOPT_RETURNTRANSFER => true,         // return web page
                 CURLOPT_HEADER         => false,        // don't return headers
                 CURLOPT_FOLLOWLOCATION => false,         // follow redirects
                // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
@@ -411,7 +430,7 @@ $product_public=array();
  $get_allcustomer=$apiurl."/v1/debtors/debtors/$CreditorPublicId";
  $jsonData_allcustomer=array();
  $jsonData_allcustomer=json_encode($jsonData_allcustomer);
-$all_cust=getall_products($get_allcustomer,$jsonData_allcustomer);
+$all_cust=getall_products($get_allcustomer,$jsonData_allcustomer,$authentication);
 $all_custmer=json_decode($all_cust);
 //sprint_r($all_custmer);
 $cust_me=array();
@@ -423,7 +442,8 @@ $creat_cutom=0;
 	{
 	$creat_cutom=1;
 	
-	$cut_public=$cust->DebtorPublicId;
+	echo "customer already there".$cut_public=$cust->DebtorPublicId;
+	
 	}
 	}
 	if($creat_cutom==0)
@@ -444,11 +464,12 @@ $request_debtors=array(
   $jsonDataDebtors = json_encode($request_debtors);
  
   
-$output=creating_products($url,$jsonDataDebtors);
-$Outcome=json_decode($output);
+$output=creating_products($url,$jsonDataDebtors,$authentication);
+$Outcome=json_decode($output,2);
 $cut_public=$Outcome['PublicId'];
 	//$product_public[]=$Outcome;
-		
+		echo "created new customer".$cut_public;
+	
 		}
 		
 		 $SIngproduct_data=array();
@@ -504,7 +525,7 @@ $cut_public=$Outcome['PublicId'];
   $get_allproduct=$apiurl."/v1/products/productbyexternalid/$CreditorPublicId/?externalid=$product_id";
  $jsonData_allproduct=array();
  $jsonData_allproduct=json_encode($jsonData_allproduct);
-$all_pro=getall_products($get_allproduct,$jsonData_allproduct);
+$all_pro=getall_products($get_allproduct,$jsonData_allproduct,$authentication);
 $all_products=json_decode($all_pro);
 	// eND OF THE CUSTOMER CHECKING
 //print_r($all_products);
@@ -512,17 +533,18 @@ $all_products=json_decode($all_pro);
 $pro_me=array();
 	if(empty($all_products->ProductPublicId))
 	{ 
-	
+	echo "created new products";
 $jsonData_product = json_encode($product_request);
  
   
-$output1=creating_products($product_url,$jsonData_product);
+$output1=creating_products($product_url,$jsonData_product,$authentication);
  
 $obj=json_decode($output1,true);
 $product_public[]=$obj['PublicId'];
 if(!empty($obj['PublicId']))
 {
-  $SIngproduct_data['ProductPublicId']=$obj['PublicId'];
+	
+  echo "prodtc id".$SIngproduct_data['ProductPublicId']=$obj['PublicId'];
 }	//$product_public[]=$Outcome;
 	}else{
 	 $product_public[]=$all_products->ProductPublicId;
@@ -538,9 +560,9 @@ $product_public=array_values($product_public);
 		//echo $order_data['currency'];
 		//print_r($order_data);
 	
-		 function CurlSendPostRequest($url,$request)
+		 function CurlSendPostRequest($url,$request,$authentication)
     {
-       $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+     //  $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
 	   $ch = curl_init($url);
         $options = array(
                 CURLOPT_RETURNTRANSFER => true,         // return web page
@@ -590,8 +612,8 @@ echo  $NewDate=date('Y-m-d h:i:s', strtotime("+".$days_option." days"));
 		
 	}else{
 		
-$current_date=$NewDate;
-	$NewDate=date('Y-m-d h:i:s', strtotime($current_date."+".$days_option." days"));	
+echo $current_date=$NewDate;
+	echo $NewDate=date('Y-m-d h:i:s', strtotime($current_date."+".$days_option." days"));	
 		
 	}
 	
@@ -625,18 +647,18 @@ $request=array(
   );
   $jsonDataEncoded = json_encode($request);
  
-$output=CurlSendPostRequest($url,$jsonDataEncoded);
+$output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
 //$Outcome=json_decode($Outcome['PublicId']);
 //exit;
-echo "my public".$publicIdcustomer=$Outcome['PublicId'];
+echo "my public ".$publicIdcustomer=$Outcome['PublicId'];
 //5592765983
 //9149854243
 if(!empty($publicIdcustomer))
 {
-	echo "https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer";
+	//echo "https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer";
 	 $ch = curl_init("https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer");
-        $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+        //$authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
 //Use the CURLOPT_PUT option to tell cURL that
 //this is a PUT request.
 curl_setopt($ch, CURLOPT_PUT, true);
@@ -688,6 +710,25 @@ $order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-p
 		
 }		
 return $Out;
+
+		}else{
+			
+		$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
+		// Reduce stock levels
+		$order->reduce_order_stock();
+		if(isset($_POST[ $this->id.'-admin-note']) && trim($_POST[ $this->id.'-admin-note'])!=''){
+			$order->add_order_note(esc_html($_POST[ $this->id.'-admin-note']),1);
+		}
+		// Remove cart
+		$woocommerce->cart->empty_cart();
+		// Return thankyou redirect
+		$out= array(
+			'result' => 'success',
+			'redirect' => $this->get_return_url( $order )
+		);	
+			
+			
+		}
 //end invoice
 	//exit;
 		// Mark as on-hold (we're awaiting the cheque)
@@ -720,7 +761,12 @@ return $Out;
              <?php
 			// print_r($this);
 			 $this->init_settings();
+			 
+
+
+
 			  $this->full_payment = $this->get_option( 'Full_payment' );
+			  
 			   $this->discount_fee = $this->get_option( 'discount_fee' );
 			  
 			   $this->inoice_fee = $this->get_option( 'inoice_fee' );
@@ -779,7 +825,7 @@ return $Out;
 				<?php }
 				 if($this->partial_payment=="yes")
 			 {?><br />
-				Partial Payment Option 1 <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option1" name="<?php echo $this->id; ?>-payment-option"  value="2"/>
+				Partial Payment (2 invoices) <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option1" name="<?php echo $this->id; ?>-payment-option"  value="2"/>
                  <div id="par_content" class="same <?php echo $this->id; ?>-payment_par_option1" style="display:none">Amount of parts <?php echo $this->num_invoices;?> 
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices1" name="<?php echo $this->id;?>-num_invoices-par1"  value="<?Php echo $this->num_invoices;?>" />
                      <div>Invoicing fee: <?php echo $this->inoice_fee_partial_option1;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option1_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option1"  value="<?Php echo $this->inoice_fee_partial_option1;?>"/>
@@ -790,7 +836,7 @@ return $Out;
 				<?php if($this->partial_payment_option2=="yes"){
 					
 					?><br />
-						Partial Payment Option 2<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option2" name="<?php echo $this->id; ?>-payment-option"  value="3"/>
+						Partial Payment (3 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option2" name="<?php echo $this->id; ?>-payment-option"  value="3"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option2" style="display:none">
 				
 				Amount of parts: 3 
@@ -807,7 +853,7 @@ return $Out;
 				}			 if($this->partial_payment_option3=="yes"){
 					
 					?><br />
-						Partial Payment Option 3<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option3" name="<?php echo $this->id; ?>-payment-option"  value="4"/>
+						Partial Payment (4 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option3" name="<?php echo $this->id; ?>-payment-option"  value="4"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option3" style="display:none">
 				
 				Amount of parts: 4 
@@ -823,7 +869,7 @@ return $Out;
 				}	 if($this->partial_payment_option4=="yes"){
 					
 					?><br />
-						Partial Payment Option 4<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="5"/>
+						Partial Payment (5 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="5"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option4" style="display:none">
 				
 				Amount of parts: 5
