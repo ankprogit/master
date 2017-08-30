@@ -1,6 +1,41 @@
 <?php 
-
-
+ob_start();
+function my_enqueue() {
+   
+  wp_enqueue_script('billect_color', plugin_dir_url(__FILE__) . 'color/jscolor.js');
+   // wp_enqueue_script( 'my_custom_script', get_template_directory_uri() . '/myscript.js' );
+}
+add_action( 'admin_enqueue_scripts', 'my_enqueue' );
+add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text1'); 
+ function woo_custom_order_button_text1($text) {
+	  global $wpdb;
+	
+	 //$k=new WC_Billecta_Payment_Gateway;
+	 $m= get_option( 'woocommerce_billecta_payment_settings' );
+	 
+	  $color_on_button=$m['color_on_button'];
+	 if($m['enabled']=="yes")
+	 {
+		 $text_on_button=$m['text_on_button'];
+		if(!empty( $text_on_button)){
+			 $text=$text_on_button;
+			
+		}
+		if(!empty( $color_on_button)){
+			 $color=$color_on_button;
+			
+		}?>
+		<style>
+		.woocommerce .place-order input[type=submit] {
+    background: #<?php echo $color;?>;
+    border-color: red;
+}
+		</style>
+		<?php
+    
+	 }
+	  return __( $text, 'woocommerce' );
+}
 
 class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	public function __construct(){
@@ -13,18 +48,15 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 		$this->enabled = $this->get_option('enabled');
 		$this->title = $this->get_option('title');
 		$this->description = $this->get_option('description');
-		$test="ff";
-		add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text'); 
- function woo_custom_order_button_text($text) {
-	  
-    return __( $text, 'woocommerce' ); 
-}
+	
+		
 
 
 		add_action('woocommerce_update_options_payment_gateways_'.$this->id, array($this, 'process_admin_options'));
 	}
 
 	public function init_form_fields(){
+		
 				$this->form_fields = array(
 					'enabled' => array(
 					'title' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
@@ -211,6 +243,7 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 'color_on_button' => array(
 					'title' 		=> __( 'color on button', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'text',
+					'class' =>'jscolor',
 					'label' 		=> __( 'Color on button Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'red'
 					),
@@ -562,7 +595,7 @@ $product_public=array_values($product_public);
 	
 		 function CurlSendPostRequest($url,$request,$authentication)
     {
-     //  $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+     
 	   $ch = curl_init($url);
         $options = array(
                 CURLOPT_RETURNTRANSFER => true,         // return web page
@@ -656,9 +689,9 @@ echo "my public ".$publicIdcustomer=$Outcome['PublicId'];
 //9149854243
 if(!empty($publicIdcustomer))
 {
-	//echo "https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer";
-	 $ch = curl_init("https://apitest.billecta.com/v1/invoice/attest/$publicIdcustomer");
-        //$authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+	
+	 $ch = curl_init($apiurl."/v1/invoice/attest/$publicIdcustomer");
+       
 //Use the CURLOPT_PUT option to tell cURL that
 //this is a PUT request.
 curl_setopt($ch, CURLOPT_PUT, true);
@@ -675,7 +708,9 @@ echo   "http: ".$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   
   
 if($httpcode==200)
-{	}else{
+{	
+ 
+}else{
 	
 		$out= array(
 			'result'   => 'failure',
@@ -815,8 +850,8 @@ return $Out;
 	   
 			 if($this->full_payment=="yes")
 			 {?>
-				Full payment <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="1" />
-                  <p class="<?php echo $this->id; ?>-payment-option1 same" id="full_content" style="display:none">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee" value="<?php echo $this->inoice_fee;?>"				  />
+				Full payment <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="1" checked />
+                  <p class="<?php echo $this->id; ?>-payment-option1 same" id="full_content" style="display:block">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee" value="<?php echo $this->inoice_fee;?>"				  />
                   
                 <br />  Discount fee <?php echo $this->discount_fee;?>
                   
@@ -826,7 +861,7 @@ return $Out;
 				 if($this->partial_payment=="yes")
 			 {?><br />
 				Partial Payment (2 invoices) <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option1" name="<?php echo $this->id; ?>-payment-option"  value="2"/>
-                 <div id="par_content" class="same <?php echo $this->id; ?>-payment_par_option1" style="display:none">Amount of parts <?php echo $this->num_invoices;?> 
+                 <div id="par_content" class="same <?php echo $this->id; ?>-payment_par_option1" style="display:none">Number of parts <?php echo $this->num_invoices;?> 
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices1" name="<?php echo $this->id;?>-num_invoices-par1"  value="<?Php echo $this->num_invoices;?>" />
                      <div>Invoicing fee: <?php echo $this->inoice_fee_partial_option1;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option1_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option1"  value="<?Php echo $this->inoice_fee_partial_option1;?>"/>
 					 <br />
@@ -839,7 +874,7 @@ return $Out;
 						Partial Payment (3 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option2" name="<?php echo $this->id; ?>-payment-option"  value="3"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option2" style="display:none">
 				
-				Amount of parts: 3 
+				Number of parts: 3 
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par2"  value="3" />
                      
 					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option2;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option2_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option2"  value="<?Php echo $this->inoice_fee_partial_par_option2;?>"/> 
@@ -856,7 +891,7 @@ return $Out;
 						Partial Payment (4 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option3" name="<?php echo $this->id; ?>-payment-option"  value="4"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option3" style="display:none">
 				
-				Amount of parts: 4 
+				Number of parts: 4 
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par3"  value="4" />
                      
 					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option3;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option3_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option3"  value="<?Php echo $this->inoice_fee_partial_par_option3;?>"/>
@@ -872,7 +907,7 @@ return $Out;
 						Partial Payment (5 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="5"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option4" style="display:none">
 				
-				Amount of parts: 5
+				Number of parts: 5
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par4"  value="5" />
                      
 					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option4;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option4_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option4"  value="<?Php echo $this->inoice_fee_partial_par_option4;?>"/>
