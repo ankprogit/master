@@ -467,7 +467,7 @@ $all_cust=getall_products($get_allcustomer,$jsonData_allcustomer,$authentication
 $all_custmer=json_decode($all_cust);
 //sprint_r($all_custmer);
 $cust_me=array();
-echo $cust_email=$order_data['billing']['email'];
+ $cust_email=$order_data['billing']['email'];
 $creat_cutom=0;
 	foreach($all_custmer as $cust)
 	{
@@ -475,7 +475,7 @@ $creat_cutom=0;
 	{
 	$creat_cutom=1;
 	
-	echo "customer already there".$cut_public=$cust->DebtorPublicId;
+$cut_public=$cust->DebtorPublicId;
 	
 	}
 	}
@@ -508,7 +508,8 @@ $cut_public=$Outcome['PublicId'];
 		 $SIngproduct_data=array();
 		 $all_Products=array();
 		foreach ( $items as $item ) {
-			
+			print_r($item);
+			exit;
  $product_name = $item['name'];
     $product_id = $item['product_id'];
     $product_quantity = $item['quantity'];
@@ -634,6 +635,13 @@ $product_public=array_values($product_public);
 	
 //Creating the first invoice
 
+
+	//"SplitInvoice":{"UseSplitInvoice":true","NumberOfSplitInvoices":2,"SplitInvoiceDetails":[{"Text":"Invoice 1 of 2","DueDate":"2017-09-19 00:00:00+02:00","PeriodStart":null,"PeriodStop":null,"ReminderDate":null,"SendDate":null,"AmountOfArticle":[{"Key":"0","Value":0.5}]},{"Text":"Invoice 2 of 2","DueDate":"2017-10-19 00:00:00+02:00","PeriodStart":null,"PeriodStop":null,"ReminderDate":null,"SendDate":"2017-10-01 00:00:00+02:00","AmountOfArticle":[{"Key":"0","Value":0.5}]}]}
+/*	
+$split=array("UseSplitInvoice"=>true,"NumberOfSplitInvoices"=>2,"SplitInvoiceDetails"=>array("0"=>array("Text"=>"Invoice 1 of 2","DueDate"=>"2017-09-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-09-18 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5)),"1"=>array("Text"=>"Invoice 2 of 2","DueDate"=>"2017-10-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-10-01 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5))));*/
+$splitInvoicedetails=array();
+echo "test".$option."test";
+echo $part=floatval(1/$option);
 for($i=1;$i<=$option;$i++)
 {
 	
@@ -641,16 +649,40 @@ for($i=1;$i<=$option;$i++)
 	{
 	echo 	$current_date=date("Y-m-d h:i:s");
 		
-echo  $NewDate=date('Y-m-d h:i:s', strtotime("+".$days_option." days"));
+  $NewDate=date('Y-m-d h:i:s', strtotime("+".$days_option." days"));
 		
 	}else{
 		
-echo $current_date=$NewDate;
+$current_date=$NewDate;
 	echo $NewDate=date('Y-m-d h:i:s', strtotime($current_date."+".$days_option." days"));	
 		
 	}
+	$splitInvoicedetails[]=array(   'Text' => 'Invoice '.$i.' of '.$option,
+        'DueDate' => $NewDate,
+        'PeriodStart' => NULL,
+        'PeriodStop' => NULL,
+        'ReminderDate' => NULL,
+        'SendDate' => $current_date,
+        'AmountOfArticle' => 
+        array (
+          0 => 
+          array (
+            'Key' => '0',
+            'Value' => $part,
+          ),
+        ),);
 	
-
+	
+}
+ $split1=array('UseSplitInvoice' => true,
+    'NumberOfSplitInvoices' => 2,
+    'SplitInvoiceDetails' =>  $splitInvoicedetails,
+  );
+  
+  if($option==1){
+	 $split1=null; 
+	  }
+$cur=date("Y-m-d h:i:s");
 	$url=$apiurl."/v1/invoice/action";
 		$records=$all_Products;
 $invoice_fee=array(
@@ -661,7 +693,7 @@ $invoice_fee=array(
 $request=array( 
   "CreditorPublicId"=> $CreditorPublicId,
   "DebtorPublicId"=> $cut_public,
-  "InvoiceDate"=>$current_date,
+  "InvoiceDate"=>$cur,
   "DueDate"=> $NewDate,
 "DeliveryDate" =>null,
   "Records"=>$records,
@@ -672,24 +704,33 @@ $request=array(
   "InvoiceFee"=> $incoice_fee,
   "VatIsIncluded"=> false,
   "SendByMailIfEmailNotViewedInDays"=> null,
-  "SplitInvoice"=> null,
+  "SplitInvoice"=> $split1,
   "InvoicePDF"=>null,
   "CreditingInvoicePublicId"=> null,
   "ExternalReference"=> null
   
   );
-  $jsonDataEncoded = json_encode($request);
- 
-$output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
+  
+print_r($request);
+
+  echo $jsonDataEncoded = json_encode($request);
+   print_r($jsonDataEncoded);
+ $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
+//print_r($output);
 //$Outcome=json_decode($Outcome['PublicId']);
 //exit;
-echo "my public ".$publicIdcustomer=$Outcome['PublicId'];
+
+$publicIdcustomer=$Outcome['PublicId'];
+
 //5592765983
 //9149854243
-if(!empty($publicIdcustomer))
+$alloutput=explode(";",$publicIdcustomer);
+
+if(!empty($alloutput))
 {
-	
+foreach($alloutput as $publicIdcustomer)
+{	
 	 $ch = curl_init($apiurl."/v1/invoice/attest/$publicIdcustomer");
        
 //Use the CURLOPT_PUT option to tell cURL that
@@ -704,21 +745,23 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
  
  
  $response = curl_exec($ch);
-echo   "http: ".$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   
   
 if($httpcode==200)
 {	
  
-}else{
+}else{	echo 'I am therte4';
 	
 		$out= array(
 			'result'   => 'failure',
     'messages' => "Attesting the invocie is failed"
 		);	
 }
+
+}
 }else{
-	
+		echo 'I am therte1';
 $out= array(
 			'result'   => 'failure',
     'messages' => "Customer is not added into the into the billecta"
@@ -726,9 +769,10 @@ $out= array(
 	
 }
 
-}
+echo $httpcode; 
 if($httpcode==200)
 {
+	
 $order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
 		// Reduce stock levels
 		$order->reduce_order_stock();
@@ -743,11 +787,13 @@ $order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-p
 			'redirect' => $this->get_return_url( $order )
 		);	
 		
+		exit();
+		
 }		
 return $Out;
 
 		}else{
-			
+				
 		$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
 		// Reduce stock levels
 		$order->reduce_order_stock();
@@ -757,7 +803,7 @@ return $Out;
 		// Remove cart
 		$woocommerce->cart->empty_cart();
 		// Return thankyou redirect
-		$out= array(
+		return array(
 			'result' => 'success',
 			'redirect' => $this->get_return_url( $order )
 		);	
