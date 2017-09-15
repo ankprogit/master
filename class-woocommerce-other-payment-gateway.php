@@ -36,7 +36,6 @@ add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text1');
 	 }
 	  return __( $text, 'woocommerce' );
 }
-
 class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	public function __construct(){
 		$this->id = 'billecta_payment';
@@ -50,11 +49,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 		$this->description = $this->get_option('description');
 	
 		
-
-
 		add_action('woocommerce_update_options_payment_gateways_'.$this->id, array($this, 'process_admin_options'));
 	}
-
 	public function init_form_fields(){
 		
 				$this->form_fields = array(
@@ -329,6 +325,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 				</div>
 				<div class="clear"></div>
 				<style type="text/css">
+				
+
 				.wpruby_button{
 					background-color:#4CAF50 !important;
 					border-color:#4CAF50 !important;
@@ -347,6 +345,7 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	public function process_payment( $order_id ) {
 		global $woocommerce;
 		$order = new WC_Order( $order_id );
+		
 		if($_POST['payment_method']=='billecta_payment')
 		{
 			
@@ -383,6 +382,7 @@ $option=$_POST['billecta_payment-payment-option'];
 		$apiurl=$_POST['billecta_payment-payment_mode'];
 		$order = new WC_Order( $order_id );
 $items = $order->get_items();
+
 	$order1 = wc_get_order( $order_id );
 		$order_data = $order1->get_data();
 	
@@ -508,12 +508,12 @@ $cut_public=$Outcome['PublicId'];
 		 $SIngproduct_data=array();
 		 $all_Products=array();
 		foreach ( $items as $item ) {
-			print_r($item);
-			exit;
+		//	print_r($item);
+			//exit;
  $product_name = $item['name'];
     $product_id = $item['product_id'];
     $product_quantity = $item['quantity'];
- $product_total = $item['total'];
+ $product_total = floatval($item['total']/$product_quantity);
  $product_subtotal_tax = $item['subtotal_tax'];
  
 	 
@@ -634,8 +634,6 @@ $product_public=array_values($product_public);
 	//	print_r($order_data['billing']);
 	
 //Creating the first invoice
-
-
 	//"SplitInvoice":{"UseSplitInvoice":true","NumberOfSplitInvoices":2,"SplitInvoiceDetails":[{"Text":"Invoice 1 of 2","DueDate":"2017-09-19 00:00:00+02:00","PeriodStart":null,"PeriodStop":null,"ReminderDate":null,"SendDate":null,"AmountOfArticle":[{"Key":"0","Value":0.5}]},{"Text":"Invoice 2 of 2","DueDate":"2017-10-19 00:00:00+02:00","PeriodStart":null,"PeriodStop":null,"ReminderDate":null,"SendDate":"2017-10-01 00:00:00+02:00","AmountOfArticle":[{"Key":"0","Value":0.5}]}]}
 /*	
 $split=array("UseSplitInvoice"=>true,"NumberOfSplitInvoices"=>2,"SplitInvoiceDetails"=>array("0"=>array("Text"=>"Invoice 1 of 2","DueDate"=>"2017-09-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-09-18 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5)),"1"=>array("Text"=>"Invoice 2 of 2","DueDate"=>"2017-10-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-10-01 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5))));*/
@@ -675,7 +673,7 @@ $current_date=$NewDate;
 	
 }
  $split1=array('UseSplitInvoice' => true,
-    'NumberOfSplitInvoices' => 2,
+    'NumberOfSplitInvoices' => $option,
     'SplitInvoiceDetails' =>  $splitInvoicedetails,
   );
   
@@ -712,21 +710,17 @@ $request=array(
   );
   
 print_r($request);
-
   echo $jsonDataEncoded = json_encode($request);
-   print_r($jsonDataEncoded);
+ //  print_r($jsonDataEncoded);
  $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
 //print_r($output);
 //$Outcome=json_decode($Outcome['PublicId']);
 //exit;
-
 $publicIdcustomer=$Outcome['PublicId'];
-
 //5592765983
 //9149854243
 $alloutput=explode(";",$publicIdcustomer);
-
 if(!empty($alloutput))
 {
 foreach($alloutput as $publicIdcustomer)
@@ -758,7 +752,6 @@ if($httpcode==200)
     'messages' => "Attesting the invocie is failed"
 		);	
 }
-
 }
 }else{
 		echo 'I am therte1';
@@ -768,7 +761,6 @@ $out= array(
 		);	
 	
 }
-
 echo $httpcode; 
 if($httpcode==200)
 {
@@ -791,7 +783,6 @@ $order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-p
 		
 }		
 return $Out;
-
 		}else{
 				
 		$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
@@ -843,9 +834,6 @@ return $Out;
 			// print_r($this);
 			 $this->init_settings();
 			 
-
-
-
 			  $this->full_payment = $this->get_option( 'Full_payment' );
 			  
 			   $this->discount_fee = $this->get_option( 'discount_fee' );
@@ -896,7 +884,26 @@ return $Out;
 	   
 			 if($this->full_payment=="yes")
 			 {?>
-				Full payment <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="1" checked />
+		 <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css'>
+<link rel='stylesheet prefetch' href='http://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css'>
+
+    <link rel="stylesheet" href="<?php echo plugin_dir_url(__FILE__);?>/style.css">
+		 <style>
+		 #par_content1 {
+    margin: 6px;
+}.payment_box.payment_method_billecta_payment {
+    box-shadow: 0px 2px 2px 6px;
+}
+		 </style>
+				<label>Full payment</label>
+				<div class="flex_container">
+  <div class="current_items">
+    <div class="current_items__row">
+  <div class="wrapper_input">
+        <input type="radio" name="one" id="radio2">
+        <label for="radio2">Full payment</label>
+      </div></div></div></div>
+				<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="1" checked />
                   <p class="<?php echo $this->id; ?>-payment-option1 same" id="full_content" style="display:block">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee" value="<?php echo $this->inoice_fee;?>"				  />
                   
                 <br />  Discount fee <?php echo $this->discount_fee;?>
@@ -906,7 +913,7 @@ return $Out;
 				<?php }
 				 if($this->partial_payment=="yes")
 			 {?><br />
-				Partial Payment (2 invoices) <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option1" name="<?php echo $this->id; ?>-payment-option"  value="2"/>
+				<label>Partial Payment (2 invoices)</label> <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option1" name="<?php echo $this->id; ?>-payment-option"  value="2"/>
                  <div id="par_content" class="same <?php echo $this->id; ?>-payment_par_option1" style="display:none">Number of parts <?php echo $this->num_invoices;?> 
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices1" name="<?php echo $this->id;?>-num_invoices-par1"  value="<?Php echo $this->num_invoices;?>" />
                      <div>Invoicing fee: <?php echo $this->inoice_fee_partial_option1;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option1_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option1"  value="<?Php echo $this->inoice_fee_partial_option1;?>"/>
@@ -917,7 +924,7 @@ return $Out;
 				<?php if($this->partial_payment_option2=="yes"){
 					
 					?><br />
-						Partial Payment (3 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option2" name="<?php echo $this->id; ?>-payment-option"  value="3"/>
+						<label>Partial Payment (3 invoices)</label><input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option2" name="<?php echo $this->id; ?>-payment-option"  value="3"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option2" style="display:none">
 				
 				Number of parts: 3 
@@ -934,7 +941,7 @@ return $Out;
 				}			 if($this->partial_payment_option3=="yes"){
 					
 					?><br />
-						Partial Payment (4 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option3" name="<?php echo $this->id; ?>-payment-option"  value="4"/>
+						<label>Partial Payment (4 invoices)</label><input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option3" name="<?php echo $this->id; ?>-payment-option"  value="4"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option3" style="display:none">
 				
 				Number of parts: 4 
@@ -950,7 +957,7 @@ return $Out;
 				}	 if($this->partial_payment_option4=="yes"){
 					
 					?><br />
-						Partial Payment (5 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="5"/>
+						<label>Partial Payment (5 invoices)</label><input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="5"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option4" style="display:none">
 				
 				Number of parts: 5
