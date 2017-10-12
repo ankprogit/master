@@ -1,4 +1,35 @@
-<?php 
+<?php add_action( 'added_post_meta', 'mp_sync_on_product_save', 10, 4 );
+add_action( 'updated_post_meta', 'mp_sync_on_product_save', 10, 4 );
+function mp_sync_on_product_save( $meta_id, $post_id, $meta_key, $meta_value ) {
+    if ( $meta_key == '_edit_lock' ) { // we've been editing the post
+        if ( get_post_type( $post_id ) == 'product' ) { // we've been editing a product
+            $_product = wc_get_product( $post_id );
+			   //$variations = $product->get_available_variations();
+			   
+			  // $_pf = new WC_Product_Factory(); 
+			  // $_product = $_pf->get_product($post_id);
+			   
+			   $title= $_product->get_title();
+$price=$_product->get_price();
+$desc= $_product->get_description();
+$status= $_product->get_status();
+if($status=="publish"){
+	$status=true;
+	
+}else{
+	$status=false;
+	
+}
+
+
+            // do something with this product
+		
+	//	echo $product->['data:protected']>name;
+			exit;
+        }
+    }
+}
+
 ob_start();
 function my_enqueue() {
    
