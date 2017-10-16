@@ -1,4 +1,6 @@
-<?php add_action( 'added_post_meta', 'mp_sync_on_product_save', 10, 4 );
+<?php 
+ob_start();
+add_action( 'added_post_meta', 'mp_sync_on_product_save', 10, 4 );
 add_action( 'updated_post_meta', 'mp_sync_on_product_save', 10, 4 );
 function mp_sync_on_product_save( $meta_id, $post_id, $meta_key, $meta_value ) {
     if ( $meta_key == '_edit_lock' ) { // we've been editing the post
@@ -7,10 +9,19 @@ function mp_sync_on_product_save( $meta_id, $post_id, $meta_key, $meta_value ) {
 			   //$variations = $product->get_available_variations();
 			   
 			  // $_pf = new WC_Product_Factory(); 
-			  // $_product = $_pf->get_product($post_id);
-			   
-			   $title= $_product->get_title();
-$price=$_product->get_price();
+			  // $_pro $this->init_settings();duct = $_pf->get_product($post_id);
+			   global $wpdb;
+			   $CreditorPublicId="985966ad-a129-434b-a5bd-fe7ceed7af12";
+			   $product_id=$post_id;
+			   $apiurl="https://apitest.billecta.com";
+			    $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+		// $this->init_settings();
+		 	//echo   get_option( 'username' );
+			//		   get_option( 'password' );
+			//			 get_option( 'CreditorPublicId' );
+		// exit;
+		 	   $title= $_product->get_title();
+ $price=$_product->get_price();
 $desc= $_product->get_description();
 $status= $_product->get_status();
 if($status=="publish"){
@@ -20,17 +31,109 @@ if($status=="publish"){
 	$status=false;
 	
 }
+function getall_products($url,$request,$authentication)
+    {
+       //$authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+	   $ch = curl_init($url);
+        $options = array(
+                CURLOPT_RETURNTRANSFER => true,         // return web page
+                CURLOPT_HEADER         => false,        // don't return headers
+                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
+               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
+			   
+                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
+                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
+                CURLOPT_TIMEOUT        => 20,          // timeout on response
+                CURLOPT_POST            => 0,    // this are my post vars
+                CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
+                CURLOPT_SSL_VERIFYPEER => false,        //
+                CURLOPT_VERBOSE        => 1,
+                CURLOPT_HTTPHEADER     => array(
+				"Authorization: Basic $authentication",
+                    "Content-Type: application/json")    
+        );
+		//print_r($options);
+        curl_setopt_array($ch,$options);
+        $data = curl_exec($ch);
+	
+        $curl_errno = curl_errno($ch);
+        $curl_error = curl_error($ch);
+        //echo $curl_errno;
+       // echo $curl_error;
+        curl_close($ch);
+        return $data;
+    }
+	
+	
 
 
+
+ $get_allproduct=$apiurl."/v1/products/productbyexternalid/$CreditorPublicId/?externalid=$product_id";
+ $jsonData_allproduct=array();
+ $jsonData_allproduct=json_encode($jsonData_allproduct);
+ $all_pro=getall_products($get_allproduct,$jsonData_allproduct,$authentication);
+$all_products=json_decode($all_pro);
+//print_r($all_products);
+
+ $ProductPublicId=$all_products->ProductPublicId;
+
+if(!empty($ProductPublicId)){
+
+ $ch = curl_init($apiurl."/v1/products/product");
+  
+	   $data=array(
+  "ProductPublicId"=> $ProductPublicId,
+  "CreditorPublicId"=> $CreditorPublicId,
+  "ArticleNumber"=> $product_id,
+  "ProductExternalId"=> $product_id,
+  "Description"=> $title,
+  "Units"=> "pairs",
+  "IsActive"=> $status,
+  "UnitPrice"=> $price,
+  "VAT"=> 10,
+  "BookKeepingAccount"=> 3000,
+  "BookKeepingSalesEUAccount"=> 3510,
+  "BookKeepingSalesEUVATAccount"=> 3610,
+  "BookKeepingSalesNonEUAccount"=> 3710,
+  "BookKeepingPurchaseAccount"=> 4000,
+  "ProductType"=> "Service"
+);
+$request=json_encode($data);
+
+//print_r($request);
+
+//echo "<br><br>";
+//Use the CURLOPT_PUT option to tell cURL that
+//this is a PUT request.
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+curl_setopt($ch, CURLOPT_HEADER, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+//We want the result / output returned.
+
+
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Accept: application/json',
+				"Authorization: Basic $authentication",
+				"Content-Type: application/json",
+			"Content-Length:". strlen($request)
+					
+
+					));
+					
+ 
+ $response = curl_exec($ch);
+ print_r($response);
+// exit;
             // do something with this product
-		
+}
 	//	echo $product->['data:protected']>name;
-			exit;
+	//		exit;
         }
     }
 }
 
-ob_start();
+
 function my_enqueue() {
    
   wp_enqueue_script('billect_color', plugin_dir_url(__FILE__) . 'color/jscolor.js');
@@ -357,7 +460,6 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 				<div class="clear"></div>
 				<style type="text/css">
 				
-
 				.wpruby_button{
 					background-color:#4CAF50 !important;
 					border-color:#4CAF50 !important;
@@ -375,8 +477,14 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	
 	public function process_payment( $order_id ) {
 		global $woocommerce;
-		$order = new WC_Order( $order_id );
 		
+		
+		echo $opId=$_POST['billecta_payment-payment-option'];
+		
+
+		
+		$order = new WC_Order( $order_id );
+		$DiscountAmount="null";
 		if($_POST['payment_method']=='billecta_payment')
 		{
 			
@@ -390,9 +498,14 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 $option=$_POST['billecta_payment-payment-option'];
 	//$full_inovice=$_POST['billecta_payment-inoice_fee'];
 	if($option==1){
+		
 		 $full_inovice=$_POST['billecta_payment-inoice_fee'];
 		 $discount_fee=$_POST['billecta_payment_discount_fee'];
+		//$DiscountAmount=array($discount_fee);
 		
+		 $DiscountAmount=array("CurrencyCode"=> "SEK",
+        "Value"=> $discount_fee,
+        "ValueForView"=> $discount_fee);
 		}
 	else{
 	$opt=$option-1;
@@ -413,7 +526,6 @@ $option=$_POST['billecta_payment-payment-option'];
 		$apiurl=$_POST['billecta_payment-payment_mode'];
 		$order = new WC_Order( $order_id );
 $items = $order->get_items();
-
 	$order1 = wc_get_order( $order_id );
 		$order_data = $order1->get_data();
 	
@@ -538,6 +650,8 @@ $cut_public=$Outcome['PublicId'];
 		
 		 $SIngproduct_data=array();
 		 $all_Products=array();
+		 $quantity_chek=array();
+		 $j=0;
 		foreach ( $items as $item ) {
 		//	print_r($item);
 			//exit;
@@ -556,7 +670,10 @@ $cut_public=$Outcome['PublicId'];
         $unit_price=array("CurrencyCode"=> "SEK",
         "Value"=> $product_total,
         "ValueForView"=> $product_total);
-		
+		$subtract_quantity=floatval($product_quantity/$option);
+	
+		$quantity_chek[]=array("key"=>$j,"value"=>$subtract_quantity);
+		$j++;
   $SIngproduct_data=array(
       "SequenceNo"=> 0,
       "Units"=> "pairs",
@@ -564,7 +681,7 @@ $cut_public=$Outcome['PublicId'];
       "Quantity"=> $product_quantity,
 	  
       "UnitPrice"=>$unit_price,
-      "DiscountAmount"=> null,
+      "DiscountAmount"=> $DiscountAmount,
       "DiscountPercentage"=> 0,
       "DiscountType"=> "Amount",
       "VAT"=> 25,
@@ -669,8 +786,8 @@ $product_public=array_values($product_public);
 /*	
 $split=array("UseSplitInvoice"=>true,"NumberOfSplitInvoices"=>2,"SplitInvoiceDetails"=>array("0"=>array("Text"=>"Invoice 1 of 2","DueDate"=>"2017-09-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-09-18 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5)),"1"=>array("Text"=>"Invoice 2 of 2","DueDate"=>"2017-10-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-10-01 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5))));*/
 $splitInvoicedetails=array();
-echo "test".$option."test";
-echo $part=floatval(1/$option);
+
+$part=floatval(1/$option);
 for($i=1;$i<=$option;$i++)
 {
 	
@@ -693,13 +810,7 @@ $current_date=$NewDate;
         'ReminderDate' => NULL,
         'SendDate' => $current_date,
         'AmountOfArticle' => 
-        array (
-          0 => 
-          array (
-            'Key' => '0',
-            'Value' => $part,
-          ),
-        ),);
+       $quantity_chek,);
 	
 	
 }
@@ -741,11 +852,13 @@ $request=array(
   );
   
 print_r($request);
-  echo $jsonDataEncoded = json_encode($request);
+echo  $jsonDataEncoded = json_encode($request);
+
  //  print_r($jsonDataEncoded);
  $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
-//print_r($output);
+print_r($output);
+exit;
 //$Outcome=json_decode($Outcome['PublicId']);
 //exit;
 $publicIdcustomer=$Outcome['PublicId'];
@@ -927,13 +1040,7 @@ return $Out;
 }
 		 </style>
 				<label>Full payment</label>
-				<div class="flex_container">
-  <div class="current_items">
-    <div class="current_items__row">
-  <div class="wrapper_input">
-        <input type="radio" name="one" id="radio2">
-        <label for="radio2">Full payment</label>
-      </div></div></div></div>
+				
 				<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="1" checked />
                   <p class="<?php echo $this->id; ?>-payment-option1 same" id="full_content" style="display:block">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee" value="<?php echo $this->inoice_fee;?>"				  />
                   
