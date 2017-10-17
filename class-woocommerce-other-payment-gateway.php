@@ -477,11 +477,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	
 	public function process_payment( $order_id ) {
 		global $woocommerce;
-		
-		
-		echo $opId=$_POST['billecta_payment-payment-option'];
-		
-
+	
+	
 		
 		$order = new WC_Order( $order_id );
 		$DiscountAmount="null";
@@ -647,6 +644,93 @@ $cut_public=$Outcome['PublicId'];
 		echo "created new customer".$cut_public;
 	
 		}
+		// Creating the registration product
+		
+			echo $opId=$_POST['billecta_payment-payment-option'];
+		
+		if($opId>1){
+					$opId1=$opId-1;
+	$price_reg=$_POST['billecta_payment-registration_fee_par_option'.$opId1];
+	$product_name_reg="Registartion Fee Partial";
+	//$product_reg=array();
+			
+			}else{
+				
+					$product_name_reg="Registartion Fee Full";
+$price_reg="-".$_POST['billecta_payment_discount_fee'];
+	
+				
+				}
+			
+				$price_regi_id="option".$opId;
+				
+$product_reg=array("CreditorPublicId"=>$CreditorPublicId,
+	"ArticleNumber"=> $opId,
+  "ProductExternalId"=> $price_regi_id,
+  "Description"=> $product_name_reg,
+  "Units"=>  "items",
+  "IsActive"=>  true,
+  "UnitPrice"=>  $price_reg,
+  "VAT"=>   0, 
+  "ProductType"=>  "Service",
+    "BookKeepingAccount"=> 3000,
+  "BookKeepingSalesEUAccount"=> 3510,
+  "BookKeepingSalesEUVATAccount"=> 3006,
+  "BookKeepingSalesNonEUAccount"=> 3108,
+  "BookKeepingPurchaseAccount"=> 4000
+  );
+	
+//print_r($product_reg);
+	
+	$get_allreg=$apiurl."/v1/products/productbyexternalid/$CreditorPublicId/?externalid=$price_regi_id";
+ $jsonData_price_regi=array();
+ $jsonData_price_regi=json_encode($jsonData_price_regi);
+$objreg=getall_products($get_allreg,$jsonData_price_regi,$authentication);
+$all_preg=json_decode($objreg);
+print_r($all_preg);
+if(empty($all_preg->ProductPublicId))
+	{ 
+	echo "creating the new registration";
+	$jsonData_proreg = json_encode($product_reg);
+ //$product_url;
+  
+ $output1reg=creating_products($product_url,$jsonData_proreg,$authentication);
+ 
+$objreg=json_decode($output1reg,true);
+$Regi_pro_public=$objreg->ProductPublicId;
+	}else{
+		$Regi_pro_public=$all_preg->ProductPublicId;
+		$product_name_reg=$all_preg->Description;
+			$price_reg=$all_preg->UnitPrice;
+		
+		
+		}
+		
+		
+		  $SIngproduct_reg=array(
+      "SequenceNo"=> 0,
+      "Units"=> "items",
+      "ArticleDescription"=> $product_name_reg,
+      "Quantity"=> 1,
+	  
+      "UnitPrice"=> array
+                (
+                    "CurrencyCode" => "SEK",
+                    "Value" => "200",
+                    "ValueForView" => "2"
+                ),
+      "DiscountPercentage"=> 0,
+      "VAT"=> 0,
+       "VatIsIncluded"=> false,
+      "Hidden"=> false,
+      "TotalIncVAT"=>null,
+	  "ProductPublicId" => $Regi_pro_public
+);
+
+
+
+		//exit;
+		
 		
 		 $SIngproduct_data=array();
 		 $all_Products=array();
@@ -737,6 +821,9 @@ if(!empty($obj['PublicId']))
 	$all_Products[]=$SIngproduct_data;
  
 }
+//$all_Products[]=$SIngproduct_reg;
+print_r($all_Products);
+//exit;
 $product_public=array_filter($product_public);
 $product_public=array_values($product_public);
 		//echo $order_data['currency'];
@@ -855,7 +942,7 @@ print_r($request);
 echo  $jsonDataEncoded = json_encode($request);
 
  //  print_r($jsonDataEncoded);
- $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
+echo $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
 print_r($output);
 exit;
