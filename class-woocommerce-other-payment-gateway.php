@@ -1,5 +1,6 @@
 <?php 
 ob_start();
+
 add_action( 'added_post_meta', 'mp_sync_on_product_save', 10, 4 );
 add_action( 'updated_post_meta', 'mp_sync_on_product_save', 10, 4 );
 function mp_sync_on_product_save( $meta_id, $post_id, $meta_key, $meta_value ) {
@@ -65,20 +66,14 @@ function getall_products($url,$request,$authentication)
     }
 	
 	
-
-
-
  $get_allproduct=$apiurl."/v1/products/productbyexternalid/$CreditorPublicId/?externalid=$product_id";
  $jsonData_allproduct=array();
  $jsonData_allproduct=json_encode($jsonData_allproduct);
  $all_pro=getall_products($get_allproduct,$jsonData_allproduct,$authentication);
 $all_products=json_decode($all_pro);
 //print_r($all_products);
-
  $ProductPublicId=$all_products->ProductPublicId;
-
 if(!empty($ProductPublicId)){
-
  $ch = curl_init($apiurl."/v1/products/product");
   
 	   $data=array(
@@ -99,9 +94,7 @@ if(!empty($ProductPublicId)){
   "ProductType"=> "Service"
 );
 $request=json_encode($data);
-
 //print_r($request);
-
 //echo "<br><br>";
 //Use the CURLOPT_PUT option to tell cURL that
 //this is a PUT request.
@@ -109,8 +102,6 @@ curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 curl_setopt($ch, CURLOPT_HEADER, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
 //We want the result / output returned.
-
-
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 'Accept: application/json',
@@ -118,7 +109,6 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 				"Content-Type: application/json",
 			"Content-Length:". strlen($request)
 					
-
 					));
 					
  
@@ -132,7 +122,6 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         }
     }
 }
-
 
 function my_enqueue() {
    
@@ -459,7 +448,6 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 				</div>
 				<div class="clear"></div>
 				<style type="text/css">
-				
 				.wpruby_button{
 					background-color:#4CAF50 !important;
 					border-color:#4CAF50 !important;
@@ -477,11 +465,7 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	
 	public function process_payment( $order_id ) {
 		global $woocommerce;
-	
-	
-		
 		$order = new WC_Order( $order_id );
-		$DiscountAmount="null";
 		if($_POST['payment_method']=='billecta_payment')
 		{
 			
@@ -495,14 +479,9 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 $option=$_POST['billecta_payment-payment-option'];
 	//$full_inovice=$_POST['billecta_payment-inoice_fee'];
 	if($option==1){
-		
 		 $full_inovice=$_POST['billecta_payment-inoice_fee'];
 		 $discount_fee=$_POST['billecta_payment_discount_fee'];
-		//$DiscountAmount=array($discount_fee);
 		
-		 $DiscountAmount=array("CurrencyCode"=> "SEK",
-        "Value"=> $discount_fee,
-        "ValueForView"=> $discount_fee);
 		}
 	else{
 	$opt=$option-1;
@@ -514,6 +493,8 @@ $option=$_POST['billecta_payment-payment-option'];
 	$full_inovice=$_POST[$invoices_fee];
 	$regist_fee=$_POST[$registration];
 	}
+
+
 	
 	//$option=$_POST['billecta_payment-payment-option'];
 	
@@ -644,9 +625,10 @@ $cut_public=$Outcome['PublicId'];
 		echo "created new customer".$cut_public;
 	
 		}
-		// Creating the registration product
-		
-			echo $opId=$_POST['billecta_payment-payment-option'];
+
+	//Registration product
+
+			$opId=$_POST['billecta_payment-payment-option'];
 		
 		if($opId>1){
 					$opId1=$opId-1;
@@ -709,36 +691,39 @@ $Regi_pro_public=$objreg->ProductPublicId;
 		
 		  $SIngproduct_reg=array(
       "SequenceNo"=> 0,
-      "Units"=> "items",
+      "Units"=> "pairs",
       "ArticleDescription"=> $product_name_reg,
       "Quantity"=> 1,
 	  
       "UnitPrice"=> array
                 (
                     "CurrencyCode" => "SEK",
-                    "Value" => "200",
-                    "ValueForView" => "2"
+                    "Value" => $price_reg,
+                    "ValueForView" => $price_reg
                 ),
       "DiscountPercentage"=> 0,
+      "DiscountType" => "Amount",
       "VAT"=> 0,
        "VatIsIncluded"=> false,
       "Hidden"=> false,
-      "TotalIncVAT"=>null,
+      "TotalIncVAT"=>array(
+                            "CurrencyCode" => SEK,
+                            "Value" => 0,
+                            "ValueForView" => 0),
 	  "ProductPublicId" => $Regi_pro_public
 );
+		  print_r($SIngproduct_reg);
+//exit;
+//End Registartion
 
-
-
-		//exit;
-		
 		
 		 $SIngproduct_data=array();
 		 $all_Products=array();
-		 $quantity_chek=array();
-		 $j=0;
+		  $quantity_chek=array();
+			 $j=0;
 		foreach ( $items as $item ) {
-		//	print_r($item);
-			//exit;
+			print_r($item);
+		//	exit;
  $product_name = $item['name'];
     $product_id = $item['product_id'];
     $product_quantity = $item['quantity'];
@@ -754,10 +739,13 @@ $Regi_pro_public=$objreg->ProductPublicId;
         $unit_price=array("CurrencyCode"=> "SEK",
         "Value"=> $product_total,
         "ValueForView"=> $product_total);
-		$subtract_quantity=floatval($product_quantity/$option);
-	
-		$quantity_chek[]=array("key"=>$j,"value"=>$subtract_quantity);
-		$j++;
+
+        $subtract_quantity=floatval($product_quantity/$option);
+		
+			$quantity_chek[]=array("key"=>$j,"value"=>$subtract_quantity);
+			$j++;
+
+		
   $SIngproduct_data=array(
       "SequenceNo"=> 0,
       "Units"=> "pairs",
@@ -765,7 +753,7 @@ $Regi_pro_public=$objreg->ProductPublicId;
       "Quantity"=> $product_quantity,
 	  
       "UnitPrice"=>$unit_price,
-      "DiscountAmount"=> $DiscountAmount,
+      "DiscountAmount"=> null,
       "DiscountPercentage"=> 0,
       "DiscountType"=> "Amount",
       "VAT"=> 25,
@@ -821,9 +809,7 @@ if(!empty($obj['PublicId']))
 	$all_Products[]=$SIngproduct_data;
  
 }
-//$all_Products[]=$SIngproduct_reg;
-print_r($all_Products);
-//exit;
+$all_Products[]=$SIngproduct_reg;
 $product_public=array_filter($product_public);
 $product_public=array_values($product_public);
 		//echo $order_data['currency'];
@@ -873,8 +859,13 @@ $product_public=array_values($product_public);
 /*	
 $split=array("UseSplitInvoice"=>true,"NumberOfSplitInvoices"=>2,"SplitInvoiceDetails"=>array("0"=>array("Text"=>"Invoice 1 of 2","DueDate"=>"2017-09-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-09-18 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5)),"1"=>array("Text"=>"Invoice 2 of 2","DueDate"=>"2017-10-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-10-01 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5))));*/
 $splitInvoicedetails=array();
+echo "test".$option."test";
+echo $part=floatval(1/$option);
+$qual_count=count($quantity_chek);
 
-$part=floatval(1/$option);
+$quantity_chek[]=array(  "key" =>$qual_count,
+                                            "value"=> $subtract_quantity);
+
 for($i=1;$i<=$option;$i++)
 {
 	
@@ -890,19 +881,19 @@ $current_date=$NewDate;
 	echo $NewDate=date('Y-m-d h:i:s', strtotime($current_date."+".$days_option." days"));	
 		
 	}
+	$k=$i-1;
 	$splitInvoicedetails[]=array(   'Text' => 'Invoice '.$i.' of '.$option,
         'DueDate' => $NewDate,
         'PeriodStart' => NULL,
         'PeriodStop' => NULL,
         'ReminderDate' => NULL,
         'SendDate' => $current_date,
-        'AmountOfArticle' => 
-       $quantity_chek,);
+        'AmountOfArticle' =>  $quantity_chek,);
 	
 	
 }
  $split1=array('UseSplitInvoice' => true,
-    'NumberOfSplitInvoices' => $option,
+    'NumberOfSplitInvoices' => 2,
     'SplitInvoiceDetails' =>  $splitInvoicedetails,
   );
   
@@ -939,15 +930,13 @@ $request=array(
   );
   
 print_r($request);
-echo  $jsonDataEncoded = json_encode($request);
-
- //  print_r($jsonDataEncoded);
-echo $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
+  echo $jsonDataEncoded = json_encode($request);
+   print_r($jsonDataEncoded);
+ $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
 print_r($output);
-exit;
 //$Outcome=json_decode($Outcome['PublicId']);
-//exit;
+exit;
 $publicIdcustomer=$Outcome['PublicId'];
 //5592765983
 //9149854243
@@ -1115,20 +1104,7 @@ return $Out;
 	   
 			 if($this->full_payment=="yes")
 			 {?>
-		 <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css'>
-<link rel='stylesheet prefetch' href='http://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css'>
-
-    <link rel="stylesheet" href="<?php echo plugin_dir_url(__FILE__);?>/style.css">
-		 <style>
-		 #par_content1 {
-    margin: 6px;
-}.payment_box.payment_method_billecta_payment {
-    box-shadow: 0px 2px 2px 6px;
-}
-		 </style>
-				<label>Full payment</label>
-				
-				<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="1" checked />
+				Full payment <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment-option1" name="<?php echo $this->id; ?>-payment-option" value="1" checked />
                   <p class="<?php echo $this->id; ?>-payment-option1 same" id="full_content" style="display:block">Invoicing fee <?php echo $this->inoice_fee;?> <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_full" name="<?php echo $this->id;?>-inoice_fee" value="<?php echo $this->inoice_fee;?>"				  />
                   
                 <br />  Discount fee <?php echo $this->discount_fee;?>
@@ -1138,7 +1114,7 @@ return $Out;
 				<?php }
 				 if($this->partial_payment=="yes")
 			 {?><br />
-				<label>Partial Payment (2 invoices)</label> <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option1" name="<?php echo $this->id; ?>-payment-option"  value="2"/>
+				Partial Payment (2 invoices) <input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option1" name="<?php echo $this->id; ?>-payment-option"  value="2"/>
                  <div id="par_content" class="same <?php echo $this->id; ?>-payment_par_option1" style="display:none">Number of parts <?php echo $this->num_invoices;?> 
                   <input type="hidden" id="<?php echo $this->id;?>-num_invoices1" name="<?php echo $this->id;?>-num_invoices-par1"  value="<?Php echo $this->num_invoices;?>" />
                      <div>Invoicing fee: <?php echo $this->inoice_fee_partial_option1;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option1_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option1"  value="<?Php echo $this->inoice_fee_partial_option1;?>"/>
@@ -1149,7 +1125,7 @@ return $Out;
 				<?php if($this->partial_payment_option2=="yes"){
 					
 					?><br />
-						<label>Partial Payment (3 invoices)</label><input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option2" name="<?php echo $this->id; ?>-payment-option"  value="3"/>
+						Partial Payment (3 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option2" name="<?php echo $this->id; ?>-payment-option"  value="3"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option2" style="display:none">
 				
 				Number of parts: 3 
@@ -1166,7 +1142,7 @@ return $Out;
 				}			 if($this->partial_payment_option3=="yes"){
 					
 					?><br />
-						<label>Partial Payment (4 invoices)</label><input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option3" name="<?php echo $this->id; ?>-payment-option"  value="4"/>
+						Partial Payment (4 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option3" name="<?php echo $this->id; ?>-payment-option"  value="4"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option3" style="display:none">
 				
 				Number of parts: 4 
@@ -1182,7 +1158,7 @@ return $Out;
 				}	 if($this->partial_payment_option4=="yes"){
 					
 					?><br />
-						<label>Partial Payment (5 invoices)</label><input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="5"/>
+						Partial Payment (5 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="5"/>
                  <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option4" style="display:none">
 				
 				Number of parts: 5
