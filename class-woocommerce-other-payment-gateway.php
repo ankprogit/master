@@ -466,6 +466,7 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 	public function process_payment( $order_id ) {
 		global $woocommerce;
 		$order = new WC_Order( $order_id );
+		$amount=null;
 		if($_POST['payment_method']=='billecta_payment')
 		{
 			
@@ -506,6 +507,32 @@ $option=$_POST['billecta_payment-payment-option'];
 $items = $order->get_items();
 	$order1 = wc_get_order( $order_id );
 		$order_data = $order1->get_data();
+		print_r($order1->get_used_coupons());
+		foreach( $order1->get_used_coupons() as $coupon_name ){
+
+    // Retrieving the coupon ID
+    $coupon_post_obj = get_page_by_title($coupon_name, OBJECT, 'shop_coupon');
+  $coupon_id = $coupon_post_obj->ID;
+
+    // Save an instance of WC_Coupon object in an array(necesary to use WC_Coupon methods)
+    $coupons_obj = new WC_Coupon($coupon_id);
+$amount=$coupons_obj->get_amount();
+    // Now you can get type in your condition
+    if ( $coupons_obj->get_discount_type() == 'cash_back_percentage' ){
+        // Get the coupon object amount
+      echo "coup1".  $coupons_amount1 = $coupons_obj->get_amount();
+    }
+
+    // Or use this other conditional method for coupon type
+    if( $coupons_obj->is_type( 'cash_back_fixed' ) ){
+        // Get the coupon object amount
+        echo "coup2".$coupons_amount2 = $coupons_obj->get_amount();
+    }
+}
+
+	
+	//print_r($order_data);
+	
 	
 	
 function getall_products($url,$request,$authentication)
@@ -744,7 +771,9 @@ $Regi_pro_public=$objreg->ProductPublicId;
 		
 			$quantity_chek[]=array("key"=>$j,"value"=>$subtract_quantity);
 			$j++;
-
+if($amount!=null ){
+	$amount=$amount*$product_quantity;
+	}
 		
   $SIngproduct_data=array(
       "SequenceNo"=> 0,
@@ -919,7 +948,7 @@ $request=array(
   "DeliveryMethod"=> "Email",
   "CommunicationLanguage"=> "SV",
   "Message"=> "This is first invoice created by me ",
-  "InvoiceFee"=> $incoice_fee,
+  "InvoiceFee"=> $invoice_fee,
   "VatIsIncluded"=> false,
   "SendByMailIfEmailNotViewedInDays"=> null,
   "SplitInvoice"=> $split1,
@@ -935,8 +964,9 @@ print_r($request);
  $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
 print_r($output);
-//$Outcome=json_decode($Outcome['PublicId']);
 exit;
+//$Outcome=json_decode($Outcome['PublicId']);
+//exit;
 $publicIdcustomer=$Outcome['PublicId'];
 //5592765983
 //9149854243
@@ -1192,3 +1222,4 @@ return $Out;
 		<?php
 	}
 }
+?>
