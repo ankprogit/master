@@ -1,6 +1,5 @@
 <?php 
 ob_start();
-
 add_action( 'added_post_meta', 'mp_sync_on_product_save', 10, 4 );
 add_action( 'updated_post_meta', 'mp_sync_on_product_save', 10, 4 );
 function mp_sync_on_product_save( $meta_id, $post_id, $meta_key, $meta_value ) {
@@ -8,14 +7,30 @@ function mp_sync_on_product_save( $meta_id, $post_id, $meta_key, $meta_value ) {
         if ( get_post_type( $post_id ) == 'product' ) { // we've been editing a product
             $_product = wc_get_product( $post_id );
 			   //$variations = $product->get_available_variations();
-			   
+			    $option="woocommerce_billecta_payment_settings";
+$out=get_option( $option, $default = false );
+
 			  // $_pf = new WC_Product_Factory(); 
 			  // $_pro $this->init_settings();duct = $_pf->get_product($post_id);
 			   global $wpdb;
-			   $CreditorPublicId="985966ad-a129-434b-a5bd-fe7ceed7af12";
+			   $CreditorPublicId=$out['CreditorPublicId'];
 			   $product_id=$post_id;
-			   $apiurl="https://apitest.billecta.com";
-			    $authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+			 $mode=$out['mode'];
+			
+				 if($mode=="yes")
+				 {
+					$apiurl= "https://api.billecta.com";
+				 }else{
+					 
+					$apiurl="https://apitest.billecta.com";
+					 
+				 }
+
+			  // $apiurl="https://apitest.billecta.com";
+			  	 $user= $out['username'];
+  $pass=$out['password'];
+		//print_r($_POST);
+		  $authentication = base64_encode("$user:$pass");
 		// $this->init_settings();
 		 	//echo   get_option( 'username' );
 			//		   get_option( 'password' );
@@ -393,7 +408,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					'title' 		=> __( 'Live/Test', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					'description' 	=> __( 'PLease select the mode fot the api to use', 'woocommerce-billecta-payment-gateway' ),
-					'label' 		=> __( 'Check this for live mode', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Check this for live mode(Live:https://api.billecta.com 
+					****  Test Url: https://apitest.billecta.com )', 'woocommerce-billecta-payment-gateway' ),
 					'desc_tip'		=> true,
 					)
 			 );
@@ -461,12 +477,99 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 				</style>
 				<?php
 	}
+	public function process_admin_options($post_data)
+{
+	  $this->init_settings();
+
+    $post_data = $this->get_post_data();
+
+ 
+ $apiurl="";
+ $user=$post_data['woocommerce_billecta_payment_username'];
+  $pass=$post_data['woocommerce_billecta_payment_password'];
+  $credit=$post_data['woocommerce_billecta_payment_CreditorPublicId'];
+    $mode=$post_data['woocommerce_billecta_payment_mode'];
 	
+  
+  	 
+	print_r($post_data);
+		  $authentication = base64_encode("$user:$pass");
+		  
+		  
+  function authenticate($url,$request,$authentication)
+    {
+       //$authentication = base64_encode("dag@kreativinsikt.se:Stockholm66");
+	   $ch = curl_init($url);
+        $options = array(
+                CURLOPT_RETURNTRANSFER => true,         // return web page
+                CURLOPT_HEADER         => false,        // don't return headers
+                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
+               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
+			   
+                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
+                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
+                CURLOPT_TIMEOUT        => 20,          // timeout on response
+                CURLOPT_POST            => 0,    // this are my post vars
+                CURLOPT_SSL_VERIFYHOST => 0,            // don't verify ssl
+                CURLOPT_SSL_VERIFYPEER => false,        //
+                CURLOPT_VERBOSE        => 1,
+                CURLOPT_HTTPHEADER     => array(
+				"Authorization: Basic $authentication",
+                    "Content-Type: application/json")    
+        );
+		//print_r($options);
+        curl_setopt_array($ch,$options);
+        $data = curl_exec($ch);
+	
+        $curl_errno = curl_errno($ch);
+        $curl_error = curl_error($ch);
+        //echo $curl_errno;
+       // echo $curl_error;
+        curl_close($ch);
+        return $data;
+    }
+	 if($mode)
+				 {
+					$apiurl= "https://api.billecta.com";
+				 }else{
+					 
+					 $apiurl="https://apitest.billecta.com";
+					 
+				 }
+
+	
+
+	
+	
+ $get_allproduct=$apiurl."/v1/authentication/apiauthenticate";
+ $jsonDa=array();
+ $jsonDa=json_encode($jsonDa);
+$all_pro=authenticate($get_allproduct,$jsonDa,$authentication);
+$auth=json_decode($all_pro);
+
+if(empty($auth)){
+
+	
+	
+	//return $post_data;
+   $redirect = add_query_arg('wc_error', __('Your-Api-Username-and-Password-is-not-valid.', 'woocommerce'));
+            wp_redirect($redirect);
+            exit;
+	
+}else{
+	
+	
+	
+}
+    parent::process_admin_options();
+ 
+ 
+
+}
 	
 	public function process_payment( $order_id ) {
 		global $woocommerce;
 		$order = new WC_Order( $order_id );
-		$amount=null;
 		if($_POST['payment_method']=='billecta_payment')
 		{
 			
@@ -507,32 +610,6 @@ $option=$_POST['billecta_payment-payment-option'];
 $items = $order->get_items();
 	$order1 = wc_get_order( $order_id );
 		$order_data = $order1->get_data();
-		print_r($order1->get_used_coupons());
-		foreach( $order1->get_used_coupons() as $coupon_name ){
-
-    // Retrieving the coupon ID
-    $coupon_post_obj = get_page_by_title($coupon_name, OBJECT, 'shop_coupon');
-  $coupon_id = $coupon_post_obj->ID;
-
-    // Save an instance of WC_Coupon object in an array(necesary to use WC_Coupon methods)
-    $coupons_obj = new WC_Coupon($coupon_id);
-$amount=$coupons_obj->get_amount();
-    // Now you can get type in your condition
-    if ( $coupons_obj->get_discount_type() == 'cash_back_percentage' ){
-        // Get the coupon object amount
-      echo "coup1".  $coupons_amount1 = $coupons_obj->get_amount();
-    }
-
-    // Or use this other conditional method for coupon type
-    if( $coupons_obj->is_type( 'cash_back_fixed' ) ){
-        // Get the coupon object amount
-        echo "coup2".$coupons_amount2 = $coupons_obj->get_amount();
-    }
-}
-
-	
-	//print_r($order_data);
-	
 	
 	
 function getall_products($url,$request,$authentication)
@@ -771,9 +848,7 @@ $Regi_pro_public=$objreg->ProductPublicId;
 		
 			$quantity_chek[]=array("key"=>$j,"value"=>$subtract_quantity);
 			$j++;
-if($amount!=null ){
-	$amount=$amount*$product_quantity;
-	}
+
 		
   $SIngproduct_data=array(
       "SequenceNo"=> 0,
@@ -948,7 +1023,7 @@ $request=array(
   "DeliveryMethod"=> "Email",
   "CommunicationLanguage"=> "SV",
   "Message"=> "This is first invoice created by me ",
-  "InvoiceFee"=> $invoice_fee,
+  "InvoiceFee"=> $incoice_fee,
   "VatIsIncluded"=> false,
   "SendByMailIfEmailNotViewedInDays"=> null,
   "SplitInvoice"=> $split1,
@@ -964,9 +1039,8 @@ print_r($request);
  $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
 print_r($output);
-exit;
 //$Outcome=json_decode($Outcome['PublicId']);
-//exit;
+exit;
 $publicIdcustomer=$Outcome['PublicId'];
 //5592765983
 //9149854243
@@ -1222,4 +1296,3 @@ return $Out;
 		<?php
 	}
 }
-?>
