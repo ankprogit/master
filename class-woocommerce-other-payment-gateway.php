@@ -1,5 +1,6 @@
 <?php 
 ob_start();
+
 add_action( 'added_post_meta', 'mp_sync_on_product_save', 10, 4 );
 add_action( 'updated_post_meta', 'mp_sync_on_product_save', 10, 4 );
 function mp_sync_on_product_save( $meta_id, $post_id, $meta_key, $meta_value ) {
@@ -174,7 +175,7 @@ add_filter( 'woocommerce_order_button_text', 'woo_custom_order_button_text1');
 	 }
 	  return __( $text, 'woocommerce' );
 }
-class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
+class WC_Other_Payment_Gateway extends WC_Payment_Gateway{
 	public function __construct(){
 		$this->id = 'billecta_payment';
 		$this->method_title = __('Billecta Payment','woocommerce-billecta-payment-gateway');
@@ -212,35 +213,34 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 						'default' => 'None of the other payment options are suitable for you? please drop us a note about your favourable payment option and we will contact you as soon as possible.',
 						'description' 	=> __( 'The message which you want it to appear to the customer in the checkout page.', 'woocommerce-billecta-payment-gateway' ),
 					),
-						'Full_payment' => array(
-					'title' 		=> __( 'Full Payment', 'woocommerce-billecta-payment-gateway' ),
-					'type' 			=> 'checkbox',
-					'label' 		=> __( 'Full payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
-					'default' 		=> '0'
-					),
-							'inoice_fee' => array(
-						'title' 		=> __( 'Invoice Fee', 'woocommerce-billecta-payment-gateway' ),
-						'type' 			=> 'number',
-						'description' 	=> __( 'This controls the title', 'woocommerce-billecta-payment-gateway' ),
-						'default'		=> __( 'Invice fee', 'woocommerce-billecta-payment-gateway' ),
-						'desc_tip'		=> true,
-					),
-							'discount_fee' => array(
-						'title' 		=> __( 'Discount Fee', 'woocommerce-billecta-payment-gateway' ),
-						'type' 			=> 'text',
-						'description' 	=> __( 'This controls the Discount on the full Payment', 'woocommerce-billecta-payment-gateway' ),
-						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
-						'desc_tip'		=> true,
-					),
-					'partial_payment' => array(
-					'title' 		=> __( 'Partial Payment', 'woocommerce-billecta-payment-gateway' ),
-					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
-					'default' 		=> 'no'
+					
+	'username' => array(
+					'title' 		=> __( 'Username', 'woocommerce-billecta-payment-gateway' ),
+					'description' 	=> __( 'Please enter the Username that you used to logged in into the billecta', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'text',
+					'label' 		=> __( 'Username Custom Payment', 'woocommerce-billecta-payment-gateway' ),
+					'desc_tip'		=> true,
 					),
-	'num_of_days_option1' => array(
-					'title' 		=> __( 'Nr of due days per invoice option1:', 'woocommerce-billecta-payment-gateway' ),
+		'password' => array(
+					'title' 		=> __( 'Password', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'password',
+					'description' 	=> __( 'Please enter the password that you used to logged in into the billecta', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Password Custom Payment', 'woocommerce-billecta-payment-gateway' ),
+					'desc_tip'		=> true,
+					),
+					
+	'CreditorPublicId' => array(
+					'title' 		=> __( 'CreditorPublicId', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'text',
+					'description' 	=> __( 'Please enter the CreditorPublicId', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'CreditorPublicId ', 'woocommerce-billecta-payment-gateway' ),
+					'desc_tip'		=> true,
+					),
+					 
+					'num_of_days_option1' => array(
+					'title' 		=> __( 'Select number days for each Invoice:', 'woocommerce-billecta-payment-gateway' ),
+					'description' => 'This is Global setting for all the invoice',
 					'type' 			=> 'select',
 					 'options' => array(
  '2'        => __( '2', 'woocommerce-billecta-payment-gateway' ),
@@ -265,7 +265,38 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
     ),
 					'label' 		=> __( 'Partial payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
-					),'partial_payment' => array(
+					),
+					
+						'Full_payment' => array(
+					'title' 		=> __( 'Full Payment', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					'label' 		=> __( 'Full payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> '0'
+					),
+							'inoice_fee' => array(
+						'title' 		=> __( 'Invoice Fee', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the title', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( 'Invice fee', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+							'discount_fee' => array(
+						'title' 		=> __( 'Discount Fee', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'text',
+						'description' 	=> __( 'This controls the Discount on the full Payment', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+					
+					
+					'partial_payment' => array(
+					'title' 		=> __( 'Partial Payment', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+	'partial_payment' => array(
 					'title' 		=> __( 'Partial Payment', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
@@ -365,9 +396,147 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
-					),
+					),'partial_payment_option5' => array(
+					'title' 		=> __( 'Partial Payment Option5', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
 					
-	'text_on_button' => array(
+					'label' 		=> __( 'Partial payment Option5', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option5' => array(
+						'title' 		=> __( 'Invoice fee Option 5', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option5' => array(
+						'title' 		=> __( 'Registration fee Option 5', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option6' => array(
+					'title' 		=> __( 'Partial Payment Option6', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option6', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option6' => array(
+						'title' 		=> __( 'Invoice fee Option 6', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option6' => array(
+						'title' 		=> __( 'Registration fee Option 6', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option7' => array(
+					'title' 		=> __( 'Partial Payment Option7', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option7', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option7' => array(
+						'title' 		=> __( 'Invoice fee Option 7', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option7' => array(
+						'title' 		=> __( 'Registration fee Option 7', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option8' => array(
+					'title' 		=> __( 'Partial Payment Option8', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option8', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option8' => array(
+						'title' 		=> __( 'Invoice fee Option 8', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option8' => array(
+						'title' 		=> __( 'Registration fee Option 8', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option9' => array(
+					'title' 		=> __( 'Partial Payment Option9', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option9', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option9' => array(
+						'title' 		=> __( 'Invoice fee Option 9', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option9' => array(
+						'title' 		=> __( 'Registration fee Option 9', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option10' => array(
+					'title' 		=> __( 'Partial Payment Option10', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option10', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option10' => array(
+						'title' 		=> __( 'Invoice fee Option 10', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option10' => array(
+						'title' 		=> __( 'Registration fee Option 10', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'partial_payment_option11' => array(
+					'title' 		=> __( 'Partial Payment Option11', 'woocommerce-billecta-payment-gateway' ),
+					'type' 			=> 'checkbox',
+					
+					'label' 		=> __( 'Partial payment Option11', 'woocommerce-billecta-payment-gateway' ),
+					'default' 		=> 'no'
+					),
+					'inoice_fee_partial_option11' => array(
+						'title' 		=> __( 'Invoice fee Option 11', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),
+						'registration_fee_option11' => array(
+						'title' 		=> __( 'Registration fee Option 11', 'woocommerce-billecta-payment-gateway' ),
+						'type' 			=> 'number',
+						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
+						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
+						'desc_tip'		=> true,
+					),'text_on_button' => array(
 					'title' 		=> __( 'Text on Button', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'text',
 					'label' 		=> __( 'Text on Button Custom Payment', 'woocommerce-billecta-payment-gateway' ),
@@ -381,29 +550,6 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					'label' 		=> __( 'Color on button Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'red'
 					),
-					
-	'username' => array(
-					'title' 		=> __( 'Username', 'woocommerce-billecta-payment-gateway' ),
-					'description' 	=> __( 'Please enter the Username that you used to logged in into the billecta', 'woocommerce-billecta-payment-gateway' ),
-					'type' 			=> 'text',
-					'label' 		=> __( 'Username Custom Payment', 'woocommerce-billecta-payment-gateway' ),
-					'desc_tip'		=> true,
-					),
-		'password' => array(
-					'title' 		=> __( 'Password', 'woocommerce-billecta-payment-gateway' ),
-					'type' 			=> 'password',
-					'description' 	=> __( 'Please enter the password that you used to logged in into the billecta', 'woocommerce-billecta-payment-gateway' ),
-					'label' 		=> __( 'Password Custom Payment', 'woocommerce-billecta-payment-gateway' ),
-					'desc_tip'		=> true,
-					),
-					
-	'CreditorPublicId' => array(
-					'title' 		=> __( 'CreditorPublicId', 'woocommerce-billecta-payment-gateway' ),
-					'type' 			=> 'text',
-					'description' 	=> __( 'Please enter the CreditorPublicId', 'woocommerce-billecta-payment-gateway' ),
-					'label' 		=> __( 'CreditorPublicId ', 'woocommerce-billecta-payment-gateway' ),
-					'desc_tip'		=> true,
-					),
 	'mode' => array(
 					'title' 		=> __( 'Live/Test', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
@@ -412,6 +558,8 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 					****  Test Url: https://apitest.billecta.com )', 'woocommerce-billecta-payment-gateway' ),
 					'desc_tip'		=> true,
 					)
+					
+	
 			 );
 	}
 	/**
@@ -477,7 +625,7 @@ class WC_Billecta_Payment_Gateway extends WC_Payment_Gateway{
 				</style>
 				<?php
 	}
-	public function process_admin_options($post_data)
+	public function process_admin_options()
 {
 	  $this->init_settings();
 
@@ -570,6 +718,8 @@ if(empty($auth)){
 	public function process_payment( $order_id ) {
 		global $woocommerce;
 		$order = new WC_Order( $order_id );
+		$amount=null;
+		$vatinc=false;
 		if($_POST['payment_method']=='billecta_payment')
 		{
 			
@@ -601,15 +751,52 @@ $option=$_POST['billecta_payment-payment-option'];
 
 	
 	//$option=$_POST['billecta_payment-payment-option'];
-	
+	$tax = new WC_Tax();
+$country_code = '*'; // or populate from order to get applicable rates
+$rates = $tax->find_rates( array( 'country' => $country_code ) );
+
+//print_r($rates);
+$tax_rate_val=0;
+foreach( $rates as $rate ){
+    $tax_rate_val = $rate['rate'];
+}
 			
-		 
+
 		$CreditorPublicId=$_POST['billecta_payment-CreditorPublicId'];
 		$apiurl=$_POST['billecta_payment-payment_mode'];
 		$order = new WC_Order( $order_id );
 $items = $order->get_items();
+
 	$order1 = wc_get_order( $order_id );
+	//print_r($order1);
+
 		$order_data = $order1->get_data();
+		//print_r($order1->get_used_coupons());
+		foreach( $order1->get_used_coupons() as $coupon_name ){
+
+    // Retrieving the coupon ID
+    $coupon_post_obj = get_page_by_title($coupon_name, OBJECT, 'shop_coupon');
+  $coupon_id = $coupon_post_obj->ID;
+
+    // Save an instance of WC_Coupon object in an array(necesary to use WC_Coupon methods)
+    $coupons_obj = new WC_Coupon($coupon_id);
+$amount=$coupons_obj->get_amount();
+    // Now you can get type in your condition
+    if ( $coupons_obj->get_discount_type() == 'cash_back_percentage' ){
+        // Get the coupon object amount
+      echo "coup1".  $coupons_amount1 = $coupons_obj->get_amount();
+    }
+
+    // Or use this other conditional method for coupon type
+    if( $coupons_obj->is_type( 'cash_back_fixed' ) ){
+        // Get the coupon object amount
+        echo "coup2".$coupons_amount2 = $coupons_obj->get_amount();
+    }
+}
+
+	
+	//print_r($order_data);
+	
 	
 	
 function getall_products($url,$request,$authentication)
@@ -706,7 +893,7 @@ $cut_public=$cust->DebtorPublicId;
 	}
 	if($creat_cutom==0)
 	{
-		 $creat_cutom; 
+		 //$creat_cutom; 
 		 $url=$apiurl."/v1/debtors/debtor";
 $request_debtors=array( 
   "CreditorPublicId"=> $CreditorPublicId,
@@ -802,16 +989,16 @@ $Regi_pro_public=$objreg->ProductPublicId;
       "UnitPrice"=> array
                 (
                     "CurrencyCode" => "SEK",
-                    "Value" => $price_reg,
+                    "Value" => $price_reg*100,
                     "ValueForView" => $price_reg
                 ),
       "DiscountPercentage"=> 0,
       "DiscountType" => "Amount",
       "VAT"=> 0,
-       "VatIsIncluded"=> false,
+       "VatIsIncluded"=> $vatinc,
       "Hidden"=> false,
       "TotalIncVAT"=>array(
-                            "CurrencyCode" => SEK,
+                            "CurrencyCode" => "SEK",
                             "Value" => 0,
                             "ValueForView" => 0),
 	  "ProductPublicId" => $Regi_pro_public
@@ -826,12 +1013,12 @@ $Regi_pro_public=$objreg->ProductPublicId;
 		  $quantity_chek=array();
 			 $j=0;
 		foreach ( $items as $item ) {
-			print_r($item);
-		//	exit;
+			//print_r($item);
+		//exit;
  $product_name = $item['name'];
     $product_id = $item['product_id'];
     $product_quantity = $item['quantity'];
- $product_total = floatval($item['total']/$product_quantity);
+ $product_total = floatval($item['subtotal']/$product_quantity);
  $product_subtotal_tax = $item['subtotal_tax'];
  
 	 
@@ -841,14 +1028,22 @@ $Regi_pro_public=$objreg->ProductPublicId;
         "ValueForView"=> $product_subtotal_tax);
 		 
         $unit_price=array("CurrencyCode"=> "SEK",
-        "Value"=> $product_total,
+        "Value"=> $product_total*100,
         "ValueForView"=> $product_total);
 
         $subtract_quantity=floatval($product_quantity/$option);
 		
 			$quantity_chek[]=array("key"=>$j,"value"=>$subtract_quantity);
 			$j++;
-
+if($amount!="null" ){
+	$amountk=$amount*$product_quantity;
+	$amount1=array("CurrencyCode"=> "SEK",
+	"Value"=> $amountk*100,
+	"ValueForView" =>$amountk
+);
+	}else{
+		$amount1=null;
+		}
 		
   $SIngproduct_data=array(
       "SequenceNo"=> 0,
@@ -857,11 +1052,11 @@ $Regi_pro_public=$objreg->ProductPublicId;
       "Quantity"=> $product_quantity,
 	  
       "UnitPrice"=>$unit_price,
-      "DiscountAmount"=> null,
+      "DiscountAmount"=> $amount1,
       "DiscountPercentage"=> 0,
       "DiscountType"=> "Amount",
-      "VAT"=> 25,
-       "VatIsIncluded"=> false,
+      "VAT"=>$tax_rate_val,
+       "VatIsIncluded"=> $vatinc,
       "Hidden"=> false,
       "TotalIncVAT"=>$total_tax
 );
@@ -872,7 +1067,7 @@ $Regi_pro_public=$objreg->ProductPublicId;
   "Units"=>  "items",
   "IsActive"=>  true,
   "UnitPrice"=>  $product_total,
-  "VAT"=>   25, 
+  "VAT"=>   $tax_rate_val, 
   "ProductType"=>  "Service",
     "BookKeepingAccount"=> 3000,
   "BookKeepingSalesEUAccount"=> 3510,
@@ -963,8 +1158,8 @@ $product_public=array_values($product_public);
 /*	
 $split=array("UseSplitInvoice"=>true,"NumberOfSplitInvoices"=>2,"SplitInvoiceDetails"=>array("0"=>array("Text"=>"Invoice 1 of 2","DueDate"=>"2017-09-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-09-18 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5)),"1"=>array("Text"=>"Invoice 2 of 2","DueDate"=>"2017-10-19 00:00:00+02:00","PeriodStart"=>null,"PeriodStop"=>null,"ReminderDate"=>null,"SendDate"=>"2017-10-01 00:00:00+02:00","AmountOfArticle"=>array("Key"=>"0","Value"=>0.5))));*/
 $splitInvoicedetails=array();
-echo "test".$option."test";
-echo $part=floatval(1/$option);
+//echo "test".$option."test";
+$part=floatval(1/$option);
 $qual_count=count($quantity_chek);
 
 $quantity_chek[]=array(  "key" =>$qual_count,
@@ -1023,8 +1218,8 @@ $request=array(
   "DeliveryMethod"=> "Email",
   "CommunicationLanguage"=> "SV",
   "Message"=> "This is first invoice created by me ",
-  "InvoiceFee"=> $incoice_fee,
-  "VatIsIncluded"=> false,
+  "InvoiceFee"=> $invoice_fee,
+  "VatIsIncluded"=> true,
   "SendByMailIfEmailNotViewedInDays"=> null,
   "SplitInvoice"=> $split1,
   "InvoicePDF"=>null,
@@ -1033,14 +1228,15 @@ $request=array(
   
   );
   
-print_r($request);
+//print_r($request);
   echo $jsonDataEncoded = json_encode($request);
-   print_r($jsonDataEncoded);
+  // print_r($jsonDataEncoded);
  $output=CurlSendPostRequest($url,$jsonDataEncoded,$authentication);
 $Outcome=json_decode($output,2);
-print_r($output);
+//print_r($output);
+//exit;
 //$Outcome=json_decode($Outcome['PublicId']);
-exit;
+//exit;
 $publicIdcustomer=$Outcome['PublicId'];
 //5592765983
 //9149854243
@@ -1085,10 +1281,10 @@ $out= array(
 		);	
 	
 }
-echo $httpcode; 
-if($httpcode==200)
+echo "jhgjg".$httpcode; 
+if($httpcode=="200")
 {
-	
+	echo "I am fine";
 $order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
 		// Reduce stock levels
 		$order->reduce_order_stock();
@@ -1102,11 +1298,11 @@ $order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-p
 			'result' => 'success',
 			'redirect' => $this->get_return_url( $order )
 		);	
-		
+		return $out;
 		exit();
 		
 }		
-return $Out;
+
 		}else{
 				
 		$order->update_status('on-hold', __( 'Awaiting payment', 'woocommerce-billecta-payment-gateway' ));
@@ -1123,7 +1319,7 @@ return $Out;
 			'redirect' => $this->get_return_url( $order )
 		);	
 			
-			
+			exit();
 		}
 //end invoice
 	//exit;
@@ -1203,6 +1399,41 @@ return $Out;
 		 $this->partial_payment_option4 = $this->get_option( 'partial_payment_option4' );
 		  	  $this->inoice_fee_partial_par_option4 = $this->get_option( 'inoice_fee_partial_option4' );
 				   $this->registration_fee_par_option4 = $this->get_option( 'registration_fee_option4' );
+				   
+				   			   
+		 $this->partial_payment_option5 = $this->get_option( 'partial_payment_option5' );
+		  	  $this->inoice_fee_partial_par_option5= $this->get_option( 'inoice_fee_partial_option5' );
+				   $this->registration_fee_par_option5 = $this->get_option( 'registration_fee_option5' );
+				   
+				   			   
+		 $this->partial_payment_option6 = $this->get_option( 'partial_payment_option6' );
+		  	  $this->inoice_fee_partial_par_option6 = $this->get_option( 'inoice_fee_partial_option6' );
+				   $this->registration_fee_par_option6 = $this->get_option( 'registration_fee_option6' );
+				   
+				   			   
+		 $this->partial_payment_option7 = $this->get_option( 'partial_payment_option7' );
+		  	  $this->inoice_fee_partial_par_option7 = $this->get_option( 'inoice_fee_partial_option7' );
+				   $this->registration_fee_par_option7= $this->get_option( 'registration_fee_option7' );
+				   
+				   			   
+		 $this->partial_payment_option8 = $this->get_option( 'partial_payment_option8' );
+		  	  $this->inoice_fee_partial_par_option8 = $this->get_option( 'inoice_fee_partial_option8' );
+				   $this->registration_fee_par_option8 = $this->get_option( 'registration_fee_option8' );
+				   
+				   			   
+		 $this->partial_payment_option9 = $this->get_option( 'partial_payment_option9' );
+		  	  $this->inoice_fee_partial_par_option9 = $this->get_option( 'inoice_fee_partial_option9' );
+				   $this->registration_fee_par_option9 = $this->get_option( 'registration_fee_option9' );
+				   
+				   			   
+		 $this->partial_payment_option10 = $this->get_option( 'partial_payment_option10' );
+		  	  $this->inoice_fee_partial_par_option10 = $this->get_option( 'inoice_fee_partial_option10' );
+				   $this->registration_fee_par_option10 = $this->get_option( 'registration_fee_option10' );
+				   
+				   			   
+		 $this->partial_payment_option11 = $this->get_option( 'partial_payment_option11' );
+		  	  $this->inoice_fee_partial_par_option11 = $this->get_option( 'inoice_fee_partial_option11' );
+				   $this->registration_fee_par_option11 = $this->get_option( 'registration_fee_option11' );
 		 
 		 
 	   
@@ -1276,6 +1507,127 @@ return $Out;
 					
 					
 				}
+				if($this->partial_payment_option5=="yes"){
+					
+					?><br />
+						Partial Payment (6 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option5" name="<?php echo $this->id; ?>-payment-option"  value="6"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option5" style="display:none">
+				
+				Number of parts: 6
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par5"  value="6" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option5;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option5_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option5"  value="<?Php echo $this->inoice_fee_partial_par_option5;?>"/>
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option5; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option5" name="<?php echo $this->id;?>-registration_fee_par_option5"  value="<?php echo   $this->registration_fee_par_option5; ?>"/></div>   </div>
+					<?php
+					
+					
+				}
+				if($this->partial_payment_option6=="yes"){
+					
+					?><br />
+						Partial Payment (7 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option6" name="<?php echo $this->id; ?>-payment-option"  value="7"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option6" style="display:none">
+				
+				Number of parts: 7
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par4"  value="5" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option6;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option6_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option4"  value="<?Php echo $this->inoice_fee_partial_par_option6;?>"/>
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option6; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option4" name="<?php echo $this->id;?>-registration_fee_par_option6"  value="<?php echo   $this->registration_fee_par_option6; ?>"/></div>   </div>
+					<?php
+					
+					
+				}
+				if($this->partial_payment_option7=="yes"){
+					
+					?><br />
+						Partial Payment (8 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="8"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option7" style="display:none">
+				
+				Number of parts: 8
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par7"  value="8" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option7;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option7_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option7"  value="<?Php echo $this->inoice_fee_partial_par_option7;?>"/>
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option4; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option7" name="<?php echo $this->id;?>-registration_fee_par_option7"  value="<?php echo   $this->registration_fee_par_option4; ?>"/></div>   </div>
+					<?php
+					
+					
+				}
+				if($this->partial_payment_option8=="yes"){
+					
+					?><br />
+						Partial Payment (9 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option4" name="<?php echo $this->id; ?>-payment-option"  value="9"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option8" style="display:none">
+				
+				Number of parts: 9
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par8"  value="5" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option8;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option8_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option8"  value="<?Php echo $this->inoice_fee_partial_par_option8;?>"/>
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option4; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option8" name="<?php echo $this->id;?>-registration_fee_par_option8"  value="<?php echo   $this->registration_fee_par_option8; ?>"/></div>   </div>
+					<?php
+					
+					
+				}
+				if($this->partial_payment_option9=="yes"){
+					
+					?><br />
+						Partial Payment (10 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option9" name="<?php echo $this->id; ?>-payment-option"  value="10"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option9" style="display:none">
+				
+				Number of parts:10
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par9"  value="10" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option9;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option9_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option9"  value="<?Php echo $this->inoice_fee_partial_par_option9;?>"/>
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option9; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option9" name="<?php echo $this->id;?>-registration_fee_par_option9"  value="<?php echo   $this->registration_fee_par_option9; ?>"/></div>   </div>
+					<?php
+					
+					
+				}
+				if($this->partial_payment_option10=="yes"){
+					
+					?><br />
+						Partial Payment (11 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option10" name="<?php echo $this->id; ?>-payment-option"  value="11"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option10" style="display:none">
+				
+				Number of parts: 11
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par10"  value="11" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option10;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option10_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option10"  value="<?Php echo $this->inoice_fee_partial_par_option10;?>"/>
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option4; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option10" name="<?php echo $this->id;?>-registration_fee_par_option10"  value="<?php echo   $this->registration_fee_par_option10; ?>"/></div>   </div>
+					<?php
+					
+					
+				}
+				if($this->partial_payment_option11=="yes"){
+					
+					?><br />
+						Partial Payment (12 invoices)<input type="radio"  class="pay" id="<?php echo $this->id; ?>-payment_par_option11" name="<?php echo $this->id; ?>-payment-option"  value="12"/>
+                 <div id="par_content1" class="same <?php echo $this->id; ?>-payment_par_option11" style="display:none">
+				
+				Number of parts: 12
+                  <input type="hidden" id="<?php echo $this->id;?>-num_invoices" name="<?php echo $this->id;?>-num_invoices-par11"  value="12" />
+                     
+					 <div>Invoicing fee: <?php echo $this->inoice_fee_partial_par_option11;?>  <input type="hidden" id="<?php echo $this->id;?>-inoice_fee_partial_option11_par" name="<?php echo $this->id;?>-inoice_fee_partial_par_option11"  value="<?Php echo $this->inoice_fee_partial_par_option11;?>"/>
+					 <br />
+					 Registration Fee: <?php echo   $this->registration_fee_par_option11; ?>
+					 <input type="hidden" id="<?php echo $this->id;?>-registration_fee_par_option11" name="<?php echo $this->id;?>-registration_fee_par_option11"  value="<?php echo   $this->registration_fee_par_option11; ?>"/></div>   </div>
+					<?php
+					
+					
+				}
+				
+				
 				
 				
 				}
@@ -1296,3 +1648,4 @@ return $Out;
 		<?php
 	}
 }
+?>
