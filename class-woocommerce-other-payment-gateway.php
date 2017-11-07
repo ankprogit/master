@@ -296,15 +296,9 @@ class WC_Other_Payment_Gateway extends WC_Payment_Gateway{
 					'label' 		=> __( 'Partial payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
-	'partial_payment' => array(
-					'title' 		=> __( 'Partial Payment', 'woocommerce-billecta-payment-gateway' ),
-					'type' 			=> 'checkbox',
-					
-					'label' 		=> __( 'Partial payment Enable Custom Payment', 'woocommerce-billecta-payment-gateway' ),
-					'default' 		=> 'no'
-					),
+	
 	'num_invoices' => array(
-					'title' 		=> __( 'Number Invoices', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '--Number Invoices', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'select',
 					 'options' => array(
  '2'        => __( '2', 'woocommerce-billecta-payment-gateway' ),
@@ -324,214 +318,214 @@ class WC_Other_Payment_Gateway extends WC_Payment_Gateway{
 					),
 					
 					'inoice_fee_partial_option1' => array(
-						'title' 		=> __( 'invoice_fee_option1', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '--invoice_fee_option1', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option1' => array(
-						'title' 		=> __( 'Registration fee Opiton2', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '--Registration fee Opiton2', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option1' => array(
-					'title' 		=> __( 'Partial Payment Option2', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '3. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
 					'label' 		=> __( 'Partial payment Option2', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option2' => array(
-						'title' 		=> __( 'Invoice fee Option 2', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option2' => array(
-						'title' 		=> __( 'Registration fee Option 2', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option3' => array(
-					'title' 		=> __( 'Partial Payment Option3', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '4. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option3', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option3' => array(
-						'title' 		=> __( 'Invoice fee Option 3', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option3' => array(
-						'title' 		=> __( 'Registration fee Option 3', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option4' => array(
-					'title' 		=> __( 'Partial Payment Option4', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '5. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option4', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option4' => array(
-						'title' 		=> __( 'Invoice fee Option 4', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option4' => array(
-						'title' 		=> __( 'Registration fee Option 4', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option5' => array(
-					'title' 		=> __( 'Partial Payment Option5', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '6. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option5', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option5' => array(
-						'title' 		=> __( 'Invoice fee Option 5', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option5' => array(
-						'title' 		=> __( 'Registration fee Option 5', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option6' => array(
-					'title' 		=> __( 'Partial Payment Option6', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '7. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option6', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option6' => array(
-						'title' 		=> __( 'Invoice fee Option 6', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option6' => array(
-						'title' 		=> __( 'Registration fee Option 6', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option7' => array(
-					'title' 		=> __( 'Partial Payment Option7', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '8.Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option7', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option7' => array(
-						'title' 		=> __( 'Invoice fee Option 7', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option7' => array(
-						'title' 		=> __( 'Registration fee Option 7', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option8' => array(
-					'title' 		=> __( 'Partial Payment Option8', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '9. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option8', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option8' => array(
-						'title' 		=> __( 'Invoice fee Option 8', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option8' => array(
-						'title' 		=> __( 'Registration fee Option 8', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option9' => array(
-					'title' 		=> __( 'Partial Payment Option9', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '10. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option9', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option9' => array(
-						'title' 		=> __( 'Invoice fee Option 9', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option9' => array(
-						'title' 		=> __( 'Registration fee Option 9', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option10' => array(
-					'title' 		=> __( 'Partial Payment Option10', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '11. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option10', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option10' => array(
-						'title' 		=> __( 'Invoice fee Option 10', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option10' => array(
-						'title' 		=> __( 'Registration fee Option 10', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),'partial_payment_option11' => array(
-					'title' 		=> __( 'Partial Payment Option11', 'woocommerce-billecta-payment-gateway' ),
+					'title' 		=> __( '12. Partial Payment Option', 'woocommerce-billecta-payment-gateway' ),
 					'type' 			=> 'checkbox',
 					
-					'label' 		=> __( 'Partial payment Option11', 'woocommerce-billecta-payment-gateway' ),
+					'label' 		=> __( 'Enable/Disable ', 'woocommerce-billecta-payment-gateway' ),
 					'default' 		=> 'no'
 					),
 					'inoice_fee_partial_option11' => array(
-						'title' 		=> __( 'Invoice fee Option 11', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Invoice fee ', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
 						'desc_tip'		=> true,
 					),
 						'registration_fee_option11' => array(
-						'title' 		=> __( 'Registration fee Option 11', 'woocommerce-billecta-payment-gateway' ),
+						'title' 		=> __( '---Registration fee', 'woocommerce-billecta-payment-gateway' ),
 						'type' 			=> 'number',
 						'description' 	=> __( 'This controls the Fee Invoice', 'woocommerce-billecta-payment-gateway' ),
 						'default'		=> __( '', 'woocommerce-billecta-payment-gateway' ),
